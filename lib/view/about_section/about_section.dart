@@ -192,6 +192,16 @@ class _AboutSectionState extends ConsumerState<AboutSection> {
       },
     ];
 
+    // Define responsive card height using your Responsive utility
+    final cardHeight = Responsive.valueWhen(context,
+      mobile: 240.0,
+      mobileSmall: 220.0,
+      mobileLarge: 250.0,
+      tablet: 230.0,
+      tabletLarge: 240.0,
+      desktop: 260.0,
+    );
+
     if (Responsive.isMobile(context)) {
       return Column(
         children: features.asMap().entries.map((entry) {
@@ -203,12 +213,15 @@ class _AboutSectionState extends ConsumerState<AboutSection> {
               isVisible: animationState.featuresVisible.length > index ?
               animationState.featuresVisible[index] : false,
               duration: const Duration(milliseconds: 600),
-              child: _buildFeatureCard(
-                  feature['icon'] as IconData,
-                  feature['title'] as String,
-                  feature['subtitle'] as String,
-                  context,
-                  index
+              child: SizedBox(
+                height: cardHeight,
+                child: _buildFeatureCard(
+                    feature['icon'] as IconData,
+                    feature['title'] as String,
+                    feature['subtitle'] as String,
+                    context,
+                    index
+                ),
               ),
             ),
           );
@@ -223,7 +236,7 @@ class _AboutSectionState extends ConsumerState<AboutSection> {
             mobile: 16.0,
             mobileSmall: 13.0,
             mobileLarge: 16.0,
-            tablet: 13.0,
+            tablet: 10.0,
             tabletLarge: 16.0,
             desktop: 16.0,
           );
@@ -239,7 +252,7 @@ class _AboutSectionState extends ConsumerState<AboutSection> {
               final feature = entry.value;
               return SizedBox(
                 width: cardWidth,
-                // Remove fixed height - let cards size themselves
+                height: cardHeight, // Added fixed height here
                 child: ScaleIn(
                   isVisible: animationState.featuresVisible.length > index ?
                   animationState.featuresVisible[index] : false,
@@ -551,14 +564,14 @@ class _FeatureCardState extends State<_FeatureCard> with SingleTickerProviderSta
         return Transform.scale(
           scale: enableHover ? _scaleAnimation.value : 1.0,
           child: Container(
-            // Remove height: double.infinity - let content determine height
+            height: double.infinity,
             width: double.infinity,
             padding: EdgeInsets.symmetric(
               horizontal: Responsive.valueWhen(context,
                 mobile: 20,
                 mobileSmall: 16,
                 mobileLarge: 24,
-                tablet: 16,
+                tablet: 12,
                 desktop: 26,
               ),
               vertical: Responsive.valueWhen(context,
@@ -582,7 +595,7 @@ class _FeatureCardState extends State<_FeatureCard> with SingleTickerProviderSta
               ],
             ),
             child: Column(
-              // Remove mainAxisAlignment and mainAxisSize constraints
+              mainAxisAlignment: MainAxisAlignment.center, // Center content vertically
               crossAxisAlignment: CrossAxisAlignment.center,
               children: [
                 TweenAnimationBuilder<double>(
@@ -620,43 +633,45 @@ class _FeatureCardState extends State<_FeatureCard> with SingleTickerProviderSta
 
                 SizedBox(height: Responsive.spacing(context, 16)),
 
-                Text(
-                  widget.title,
-                  style: GoogleFonts.poppins(
-                    fontSize: Responsive.fontSize(context, 18,
-                      mobileSmallScale: 0.9,
-                      mobileLargeScale: 1.0,
-                      tabletScale: 0.9,
-                      desktopScale: 1.0,
+                Flexible( // Allow text to shrink if needed
+                  child: Text(
+                    widget.title,
+                    style: GoogleFonts.poppins(
+                      fontSize: Responsive.fontSize(context, 18,
+                        mobileSmallScale: 0.9,
+                        mobileLargeScale: 1.0,
+                        tabletScale: 0.9,
+                        desktopScale: 1.0,
+                      ),
+                      fontWeight: FontWeight.w600,
+                      color: const Color(0xFF2D3748),
                     ),
-                    fontWeight: FontWeight.w600,
-                    color: const Color(0xFF2D3748),
+                    textAlign: TextAlign.center,
+                    maxLines: 2,
+                    overflow: TextOverflow.ellipsis,
                   ),
-                  textAlign: TextAlign.center,
-                  maxLines: 2,
-                  overflow: TextOverflow.ellipsis,
                 ),
 
                 SizedBox(height: Responsive.spacing(context, 12)),
 
-                Text(
-                  widget.subtitle,
-                  style: GoogleFonts.poppins(
-                    fontSize: Responsive.fontSize(context, 15,
-                      mobileSmallScale: 0.85,
-                      mobileLargeScale: 0.95,
-                      tabletScale: 0.8,
-                      desktopScale: 1.0,
+                Expanded( // Allow subtitle to take remaining space
+                  child: Text(
+                    widget.subtitle,
+                    style: GoogleFonts.poppins(
+                      fontSize: Responsive.fontSize(context, 15,
+                        mobileSmallScale: 0.85,
+                        mobileLargeScale: 0.95,
+                        tabletScale: 0.8,
+                        desktopScale: 1.0,
+                      ),
+                      color: const Color(0xFF4A5568),
+                      height: 1.4,
                     ),
-                    color: const Color(0xFF4A5568),
-                    height: 1.4,
+                    textAlign: TextAlign.center,
+                    maxLines: 4,
+                    overflow: TextOverflow.ellipsis,
                   ),
-                  textAlign: TextAlign.center,
-                  maxLines: 4, // Allow more lines for mobile
-                  overflow: TextOverflow.ellipsis,
                 ),
-
-                SizedBox(height: Responsive.spacing(context, 16)),
               ],
             ),
           ),

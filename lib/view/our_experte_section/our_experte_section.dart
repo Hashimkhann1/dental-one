@@ -1,12 +1,56 @@
+import 'package:dental_one/view_model/our_expert_view_model/our_expert_view_model.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:dental_one/res/responsive/responsive.dart';
 
-class OurExpertSection extends StatelessWidget {
+class OurExpertSection extends ConsumerStatefulWidget {
   const OurExpertSection({super.key});
 
   @override
+  ConsumerState<OurExpertSection> createState() => _OurExpertSectionState();
+}
+
+class _OurExpertSectionState extends ConsumerState<OurExpertSection> {
+  late ScrollController _scrollController;
+  bool _hasTriggered = false;
+
+  @override
+  void initState() {
+    super.initState();
+    // Find the nearest ScrollController from the widget tree
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      _scrollController = Scrollable.of(context).widget.controller ?? ScrollController();
+      _scrollController.addListener(_onScroll);
+    });
+  }
+
+  @override
+  void dispose() {
+    _scrollController.removeListener(_onScroll);
+    super.dispose();
+  }
+
+  void _onScroll() {
+    if (_hasTriggered) return;
+
+    final RenderBox? renderBox = context.findRenderObject() as RenderBox?;
+    if (renderBox == null) return;
+
+    final position = renderBox.localToGlobal(Offset.zero);
+    final screenHeight = MediaQuery.of(context).size.height;
+
+    // Trigger animation when section is 20% visible from bottom
+    if (position.dy < screenHeight * 0.8) {
+      _hasTriggered = true;
+      ref.read(ourExpertAnimationProvider.notifier).triggerSectionVisible();
+    }
+  }
+
+  @override
   Widget build(BuildContext context) {
+    final animationState = ref.watch(ourExpertAnimationProvider);
+
     return Container(
       width: double.infinity,
       color: Colors.white,
@@ -15,8 +59,8 @@ class OurExpertSection extends StatelessWidget {
           mobile: 20,
           mobileSmall: 16,
           mobileLarge: 24,
-          tablet: 40,
-          tabletLarge: 60,
+          tablet: 10,
+          tabletLarge: 10,
           desktop: 180,
         ),
         vertical: Responsive.valueWhen(context,
@@ -30,8 +74,8 @@ class OurExpertSection extends StatelessWidget {
       ),
       child: Column(
         children: [
-          // Header Section
-          _buildHeaderSection(context),
+          // Header Section with Animation
+          _buildAnimatedHeaderSection(context, animationState.isHeaderVisible),
 
           SizedBox(height: Responsive.spacing(context, 60,
             mobileSmallMultiplier: 0.7,
@@ -41,8 +85,8 @@ class OurExpertSection extends StatelessWidget {
             desktopMultiplier: 1.0,
           )),
 
-          // Team Members Section
-          _buildTeamMembersSection(context),
+          // Team Members Section with Animation
+          _buildAnimatedTeamMembersSection(context, animationState),
 
           SizedBox(height: Responsive.spacing(context, 70,
             mobileSmallMultiplier: 0.85,
@@ -52,64 +96,73 @@ class OurExpertSection extends StatelessWidget {
             desktopMultiplier: 1.15,
           )),
 
-          // Why Choose Our Team Section
-          _buildWhyChooseSection(context),
+          // Why Choose Our Team Section with Animation
+          _buildAnimatedWhyChooseSection(context, animationState),
         ],
       ),
     );
   }
 
-  Widget _buildHeaderSection(BuildContext context) {
-    return Column(
-      children: [
-        Text(
-          'Meet Our Expert Team',
-          style: GoogleFonts.poppins(
-            fontSize: Responsive.fontSize(context, 40,
-              mobileSmallScale: 0.8,    // 32px
-              mobileLargeScale: 0.85,   // 34px
-              tabletScale: 0.9,         // 36px
-              tabletLargeScale: 0.95,   // 38px
-              desktopScale: 1.0,        // 40px
-            ),
-            fontWeight: FontWeight.bold,
-            color: const Color(0xFF2D3748),
-          ),
-          textAlign: TextAlign.center,
-        ),
-
-        SizedBox(height: Responsive.spacing(context, 16)),
-
-        Container(
-          constraints: const BoxConstraints(maxWidth: 800),
-          child: Text(
-            'Our team of experienced dental professionals is dedicated to providing you with the highest quality care. Each member brings unique expertise and a shared commitment to your oral health and comfort.',
-            style: GoogleFonts.inter(
-              fontSize: Responsive.fontSize(context, 18,
-                mobileSmallScale: 0.85,   // 15px
-                mobileLargeScale: 0.9,    // 16px
-                tabletScale: 1.0,         // 18px
-                tabletLargeScale: 1.0,    // 18px
-                desktopScale: 1.0,        // 18px
+  Widget _buildAnimatedHeaderSection(BuildContext context, bool isVisible) {
+    return AnimatedOpacity(
+      opacity: isVisible ? 1.0 : 0.0,
+      duration: const Duration(milliseconds: 600),
+      child: AnimatedContainer(
+        duration: const Duration(milliseconds: 600),
+        curve: Curves.easeOutCubic,
+        transform: Matrix4.identity()..translate(0.0, isVisible ? 0.0 : -40.0),
+        child: Column(
+          children: [
+            Text(
+              'Meet Our Expert Team',
+              style: GoogleFonts.poppins(
+                fontSize: Responsive.fontSize(context, 40,
+                  mobileSmallScale: 0.8,    // 32px
+                  mobileLargeScale: 0.85,   // 34px
+                  tabletScale: 0.9,         // 36px
+                  tabletLargeScale: 0.95,   // 38px
+                  desktopScale: 1.0,        // 40px
+                ),
+                fontWeight: FontWeight.bold,
+                color: const Color(0xFF2D3748),
               ),
-              color: const Color(0xFF718096),
-              height: 1.6,
+              textAlign: TextAlign.center,
             ),
-            textAlign: TextAlign.center,
-          ),
+
+            SizedBox(height: Responsive.spacing(context, 16)),
+
+            Container(
+              constraints: const BoxConstraints(maxWidth: 800),
+              child: Text(
+                'Our team of experienced dental professionals is dedicated to providing you with the highest quality care. Each member brings unique expertise and a shared commitment to your oral health and comfort.',
+                style: GoogleFonts.inter(
+                  fontSize: Responsive.fontSize(context, 18,
+                    mobileSmallScale: 0.85,   // 15px
+                    mobileLargeScale: 0.9,    // 16px
+                    tabletScale: 1.0,         // 18px
+                    tabletLargeScale: 1.0,    // 18px
+                    desktopScale: 1.0,        // 18px
+                  ),
+                  color: const Color(0xFF718096),
+                  height: 1.6,
+                ),
+                textAlign: TextAlign.center,
+              ),
+            ),
+          ],
         ),
-      ],
+      ),
     );
   }
 
-  Widget _buildTeamMembersSection(BuildContext context) {
+  Widget _buildAnimatedTeamMembersSection(BuildContext context, OurExpertAnimationState animationState) {
     final teamMembers = [
       {
         'name': 'Dr. Sarah Johnson',
         'role': 'Lead Dentist & Clinic Director',
         'experience': '15+ years',
         'image': 'https://images.unsplash.com/photo-1559839734-2b71ea197ec2?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=2340&q=80',
-        'description': 'Dr. Johnson is passionate about creating beautiful, healthy smiles through comprehensive dental care and advanced cosmetic procedures.',
+        'description': 'Dr. Johnson is passionate about creating healthy, beautiful smiles with advanced dental care.',
         'education': 'DDS, Harvard School of Dental Medicine',
         'expertise': ['General Dentistry', 'Cosmetic Procedures'],
       },
@@ -135,89 +188,119 @@ class OurExpertSection extends StatelessWidget {
 
     if (Responsive.isMobile(context)) {
       return Column(
-        children: teamMembers.map((member) =>
-            Padding(
-              padding: EdgeInsets.only(bottom: Responsive.spacing(context, 32)),
-              child: _buildTeamMemberCard(member, context),
-            ),
-        ).toList(),
+        children: teamMembers.asMap().entries.map((entry) {
+          final index = entry.key;
+          final member = entry.value;
+          final isVisible = animationState.teamMemberVisibilities.length > index
+              ? animationState.teamMemberVisibilities[index]
+              : false;
+
+          return Padding(
+            padding: EdgeInsets.only(bottom: Responsive.spacing(context, 32)),
+            child: _buildAnimatedTeamMemberCard(member, context, isVisible, index),
+          );
+        }).toList(),
       );
     } else {
       return Row(
         crossAxisAlignment: CrossAxisAlignment.start,
-        children: teamMembers.map((member) =>
-            Expanded(
-              child: Padding(
-                padding: EdgeInsets.symmetric(horizontal: Responsive.spacing(context, 12)),
-                child: _buildTeamMemberCard(member, context),
-              ),
+        children: teamMembers.asMap().entries.map((entry) {
+          final index = entry.key;
+          final member = entry.value;
+          final isVisible = animationState.teamMemberVisibilities.length > index
+              ? animationState.teamMemberVisibilities[index]
+              : false;
+
+          return Expanded(
+            child: Padding(
+              padding: EdgeInsets.symmetric(horizontal: Responsive.spacing(context, Responsive.isTablet(context) ? 7 : 12)),
+              child: _buildAnimatedTeamMemberCard(member, context, isVisible, index),
             ),
-        ).toList(),
+          );
+        }).toList(),
       );
     }
   }
 
-  Widget _buildTeamMemberCard(Map<String, dynamic> member, BuildContext context) {
-    return _TeamMemberCard(
-      name: member['name'] as String,
-      role: member['role'] as String,
-      experience: member['experience'] as String,
-      image: member['image'] as String,
-      description: member['description'] as String,
-      education: member['education'] as String,
-      expertise: List<String>.from(member['expertise']),
-      context: context,
+  Widget _buildAnimatedTeamMemberCard(Map<String, dynamic> member, BuildContext context, bool isVisible, int index) {
+    return AnimatedOpacity(
+      opacity: isVisible ? 1.0 : 0.0,
+      duration: Duration(milliseconds: 500 + (index * 100)), // Stagger animation
+      child: AnimatedContainer(
+        duration: Duration(milliseconds: 700 + (index * 100)),
+        curve: Curves.easeOutCubic,
+        transform: Matrix4.identity()..translate(0.0, isVisible ? 0.0 : 60.0),
+        child: _TeamMemberCard(
+          name: member['name'] as String,
+          role: member['role'] as String,
+          experience: member['experience'] as String,
+          image: member['image'] as String,
+          description: member['description'] as String,
+          education: member['education'] as String,
+          expertise: List<String>.from(member['expertise']),
+          context: context,
+        ),
+      ),
     );
   }
 
-  Widget _buildWhyChooseSection(BuildContext context) {
-    return Container(
-      width: double.infinity,
-      padding: EdgeInsets.all(Responsive.valueWhen(context,
-        mobile: 30,
-        mobileSmall: 24,
-        mobileLarge: 32,
-        tablet: 34,
-        tabletLarge: 36,
-        desktop: 40,
-      )),
-      decoration: BoxDecoration(
-        color: const Color(0xFFF7FAFC),
-        borderRadius: BorderRadius.circular(16),
-      ),
-      child: Column(
-        children: [
-          Text(
-            'Why Choose Our Team?',
-            style: GoogleFonts.poppins(
-              fontSize: Responsive.fontSize(context, 30,
-                mobileSmallScale: 0.8,    // 24px
-                mobileLargeScale: 0.85,   // 26px
-                tabletScale: 0.95,        // 28px
-                tabletLargeScale: 1.0,    // 30px
-                desktopScale: 1.0,        // 30px
-              ),
-              fontWeight: FontWeight.bold,
-              color: const Color(0xFF2D3748),
-            ),
-            textAlign: TextAlign.center,
-          ),
-
-          SizedBox(height: Responsive.spacing(context, 36,
-            mobileSmallMultiplier: 0.9,
-            mobileLargeMultiplier: 0.9,
-            tabletMultiplier: 1.1,
-            tabletLargeMultiplier: 1.1,
-            desktopMultiplier: 1.1,
+  Widget _buildAnimatedWhyChooseSection(BuildContext context, OurExpertAnimationState animationState) {
+    return AnimatedOpacity(
+      opacity: animationState.isWhyChooseSectionVisible ? 1.0 : 0.0,
+      duration: const Duration(milliseconds: 600),
+      child: AnimatedContainer(
+        duration: const Duration(milliseconds: 600),
+        curve: Curves.easeOutCubic,
+        transform: Matrix4.identity()..translate(0.0, animationState.isWhyChooseSectionVisible ? 0.0 : 40.0),
+        child: Container(
+          width: double.infinity,
+          padding: EdgeInsets.all(Responsive.valueWhen(context,
+            mobile: 30,
+            mobileSmall: 24,
+            mobileLarge: 32,
+            tablet: 34,
+            tabletLarge: 36,
+            desktop: 40,
           )),
+          decoration: BoxDecoration(
+            color: const Color(0xFFF7FAFC),
+            borderRadius: BorderRadius.circular(16),
+          ),
+          child: Column(
+            children: [
+              Text(
+                'Why Choose Our Team?',
+                style: GoogleFonts.poppins(
+                  fontSize: Responsive.fontSize(context, 30,
+                    mobileSmallScale: 0.8,    // 24px
+                    mobileLargeScale: 0.85,   // 26px
+                    tabletScale: 0.95,        // 28px
+                    tabletLargeScale: 1.0,    // 30px
+                    desktopScale: 1.0,        // 30px
+                  ),
+                  fontWeight: FontWeight.bold,
+                  color: const Color(0xFF2D3748),
+                ),
+                textAlign: TextAlign.center,
+              ),
 
-          _buildWhyChooseFeatures(context),
-        ],
+              SizedBox(height: Responsive.spacing(context, 36,
+                mobileSmallMultiplier: 0.9,
+                mobileLargeMultiplier: 0.9,
+                tabletMultiplier: 1.1,
+                tabletLargeMultiplier: 1.1,
+                desktopMultiplier: 1.1,
+              )),
+
+              _buildAnimatedWhyChooseFeatures(context, animationState),
+            ],
+          ),
+        ),
       ),
     );
   }
 
-  Widget _buildWhyChooseFeatures(BuildContext context) {
+  Widget _buildAnimatedWhyChooseFeatures(BuildContext context, OurExpertAnimationState animationState) {
     final features = [
       {
         'icon': Icons.verified_outlined,
@@ -238,88 +321,109 @@ class OurExpertSection extends StatelessWidget {
 
     if (Responsive.isMobile(context)) {
       return Column(
-        children: features.map((feature) =>
-            Padding(
-              padding: EdgeInsets.only(bottom: Responsive.spacing(context, 20)),
-              child: _buildFeatureCard(feature, context),
-            ),
-        ).toList(),
+        children: features.asMap().entries.map((entry) {
+          final index = entry.key;
+          final feature = entry.value;
+          final isVisible = animationState.featureVisibilities.length > index
+              ? animationState.featureVisibilities[index]
+              : false;
+
+          return Padding(
+            padding: EdgeInsets.only(bottom: Responsive.spacing(context, 20)),
+            child: _buildAnimatedFeatureCard(feature, context, isVisible, index),
+          );
+        }).toList(),
       );
     } else {
       return Row(
-        children: features.map((feature) =>
-            Expanded(
-              child: Padding(
-                padding: EdgeInsets.symmetric(horizontal: Responsive.spacing(context, 12)),
-                child: _buildFeatureCard(feature, context),
-              ),
+        children: features.asMap().entries.map((entry) {
+          final index = entry.key;
+          final feature = entry.value;
+          final isVisible = animationState.featureVisibilities.length > index
+              ? animationState.featureVisibilities[index]
+              : false;
+
+          return Expanded(
+            child: Padding(
+              padding: EdgeInsets.symmetric(horizontal: Responsive.spacing(context, 12)),
+              child: _buildAnimatedFeatureCard(feature, context, isVisible, index),
             ),
-        ).toList(),
+          );
+        }).toList(),
       );
     }
   }
 
-  Widget _buildFeatureCard(Map<String, dynamic> feature, BuildContext context) {
-    return Container(
-      padding: EdgeInsets.all(Responsive.spacing(context, 24)),
-      child: Column(
-        children: [
-          Container(
-            padding: EdgeInsets.all(Responsive.spacing(context, 16)),
-            decoration: BoxDecoration(
-              color: const Color(0xFF3182CE).withOpacity(0.1),
-              borderRadius: BorderRadius.circular(12),
-            ),
-            child: Icon(
-              feature['icon'] as IconData,
-              color: const Color(0xFF3182CE),
-              size: Responsive.valueWhen(context,
-                mobile: 32,
-                mobileSmall: 28,
-                mobileLarge: 32,
-                tablet: 34,
-                tabletLarge: 36,
-                desktop: 38,
+  Widget _buildAnimatedFeatureCard(Map<String, dynamic> feature, BuildContext context, bool isVisible, int index) {
+    return AnimatedOpacity(
+      opacity: isVisible ? 1.0 : 0.0,
+      duration: Duration(milliseconds: 400 + (index * 100)), // Stagger animation
+      child: AnimatedContainer(
+        duration: Duration(milliseconds: 600 + (index * 100)),
+        curve: Curves.easeOutCubic,
+        transform: Matrix4.identity()..translate(0.0, isVisible ? 0.0 : 30.0),
+        child: Container(
+          padding: EdgeInsets.all(Responsive.spacing(context, 24)),
+          child: Column(
+            children: [
+              Container(
+                padding: EdgeInsets.all(Responsive.spacing(context, 16)),
+                decoration: BoxDecoration(
+                  color: const Color(0xFF3182CE).withOpacity(0.1),
+                  borderRadius: BorderRadius.circular(12),
+                ),
+                child: Icon(
+                  feature['icon'] as IconData,
+                  color: const Color(0xFF3182CE),
+                  size: Responsive.valueWhen(context,
+                    mobile: 32,
+                    mobileSmall: 28,
+                    mobileLarge: 32,
+                    tablet: 34,
+                    tabletLarge: 36,
+                    desktop: 38,
+                  ),
+                ),
               ),
-            ),
-          ),
 
-          SizedBox(height: Responsive.spacing(context, 16)),
+              SizedBox(height: Responsive.spacing(context, 16)),
 
-          Text(
-            feature['title'] as String,
-            style: GoogleFonts.inter(
-              fontSize: Responsive.fontSize(context, 20,
-                mobileSmallScale: 0.9,    // 18px
-                mobileLargeScale: 0.95,   // 19px
-                tabletScale: 1.0,         // 20px
-                tabletLargeScale: 1.0,    // 20px
-                desktopScale: 1.05,       // 21px
+              Text(
+                feature['title'] as String,
+                style: GoogleFonts.inter(
+                  fontSize: Responsive.fontSize(context, 20,
+                    mobileSmallScale: 0.9,    // 18px
+                    mobileLargeScale: 0.95,   // 19px
+                    tabletScale: 1.0,         // 20px
+                    tabletLargeScale: 1.0,    // 20px
+                    desktopScale: 1.05,       // 21px
+                  ),
+                  fontWeight: FontWeight.w700,
+                  color: const Color(0xFF2D3748),
+                ),
+                textAlign: TextAlign.center,
               ),
-              fontWeight: FontWeight.w700,
-              color: const Color(0xFF2D3748),
-            ),
-            textAlign: TextAlign.center,
-          ),
 
-          SizedBox(height: Responsive.spacing(context, 8)),
+              SizedBox(height: Responsive.spacing(context, 8)),
 
-          Text(
-            feature['description'] as String,
-            style: GoogleFonts.inter(
-              fontSize: Responsive.fontSize(context, 15,
-                mobileSmallScale: 0.9,    // 14px
-                mobileLargeScale: 0.95,   // 14px
-                tabletScale: 1.0,         // 15px
-                tabletLargeScale: 1.0,    // 15px
-                desktopScale: 1.05,       // 16px
+              Text(
+                feature['description'] as String,
+                style: GoogleFonts.inter(
+                  fontSize: Responsive.fontSize(context, 15,
+                    mobileSmallScale: 0.9,    // 14px
+                    mobileLargeScale: 0.95,   // 14px
+                    tabletScale: 1.0,         // 15px
+                    tabletLargeScale: 1.0,    // 15px
+                    desktopScale: 1.05,       // 16px
+                  ),
+                  color: const Color(0xFF718096),
+                  height: 1.5,
+                ),
+                textAlign: TextAlign.center,
               ),
-              color: const Color(0xFF718096),
-              height: 1.5,
-            ),
-            textAlign: TextAlign.center,
+            ],
           ),
-        ],
+        ),
       ),
     );
   }
@@ -464,7 +568,7 @@ class _TeamMemberCardState extends State<_TeamMemberCard> {
 
               // Content
               Padding(
-                padding: EdgeInsets.all(Responsive.spacing(context, 24)),
+                padding: EdgeInsets.all(Responsive.spacing(context, Responsive.isTablet(context) ? 12 : 24)),
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
@@ -558,41 +662,6 @@ class _TeamMemberCardState extends State<_TeamMemberCard> {
 
                     SizedBox(height: Responsive.spacing(context, 16)),
 
-                    // Expertise tags
-                    Wrap(
-                      spacing: Responsive.spacing(context, 8),
-                      runSpacing: Responsive.spacing(context, 8),
-                      children: widget.expertise.map((skill) =>
-                          Container(
-                            padding: EdgeInsets.symmetric(
-                              horizontal: Responsive.spacing(context, 8),
-                              vertical: Responsive.spacing(context, 4),
-                            ),
-                            decoration: BoxDecoration(
-                              color: const Color(0xFFF7FAFC),
-                              borderRadius: BorderRadius.circular(16),
-                              border: Border.all(
-                                color: const Color(0xFFE2E8F0),
-                                width: 1,
-                              ),
-                            ),
-                            child: Text(
-                              skill,
-                              style: GoogleFonts.inter(
-                                fontSize: Responsive.fontSize(context, 11,
-                                  mobileSmallScale: 0.8,    // 9px
-                                  mobileLargeScale: 0.9,    // 10px
-                                  tabletScale: 1.0,         // 11px
-                                  tabletLargeScale: 1.05,   // 12px
-                                  desktopScale: 1.1,        // 12px
-                                ),
-                                color: const Color(0xFF4A5568),
-                                fontWeight: FontWeight.w700,
-                              ),
-                            ),
-                          ),
-                      ).toList(),
-                    ),
                   ],
                 ),
               ),

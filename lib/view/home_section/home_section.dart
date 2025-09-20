@@ -59,45 +59,56 @@ class _HomeSectionState extends ConsumerState<HomeSection>
       width: double.infinity,
       height: MediaQuery.of(context).size.height * 0.9,
       decoration: const BoxDecoration(),
-      child: LayoutBuilder(
-        builder: (context, constraints) {
-          final isDesktop = constraints.maxWidth > 1024;
-          final isTablet = constraints.maxWidth > 768;
-
-          return SingleChildScrollView(
-            child: ConstrainedBox(
-              constraints: BoxConstraints(
-                minHeight: MediaQuery.of(context).size.height * 0.86,
-              ),
-              child: Center(
-                child: Padding(
-                  padding: EdgeInsets.symmetric(
-                    horizontal: isDesktop ? 200 : (isTablet ? 40 : 20),
-                    vertical: Responsive.isMobile(context) ? 28 : 0,
-                  ),
-                  child: isTablet
-                      ? _buildDesktopLayout(context, isDesktop)
-                      : _buildMobileLayout(context),
+      child: SingleChildScrollView(
+        child: ConstrainedBox(
+          constraints: BoxConstraints(
+            minHeight: MediaQuery.of(context).size.height * 0.86,
+          ),
+          child: Center(
+            child: Padding(
+              padding: EdgeInsets.symmetric(
+                horizontal: Responsive.valueWhen(context,
+                  mobile: 20,
+                  mobileSmall: 16,
+                  mobileLarge: 24,
+                  tablet: 40,
+                  tabletLarge: 60,
+                  desktop: 200,
+                ),
+                vertical: Responsive.valueWhen(context,
+                  mobile: 28,
+                  mobileSmall: 24,
+                  mobileLarge: 32,
+                  tablet: 20,
+                  tabletLarge: 24,
+                  desktop: 0,
                 ),
               ),
+              child: Responsive.isDesktop(context)
+                  ? _buildDesktopLayout(context)
+                  : _buildMobileLayout(context),
             ),
-          );
-        },
+          ),
+        ),
       ),
     );
   }
 
-  Widget _buildDesktopLayout(BuildContext context, bool isDesktop) {
+  Widget _buildDesktopLayout(BuildContext context) {
     return Row(
       children: [
         Expanded(
           flex: 5,
-          child: _buildLeftContent(context, isDesktop),
+          child: _buildLeftContent(context),
         ),
-        SizedBox(width: isDesktop ? 80 : 40),
+        SizedBox(width: Responsive.valueWhen(context,
+          tablet: 40,
+          tabletLarge: 60,
+          desktop: 80, mobile: 20,
+        )),
         Expanded(
           flex: 6,
-          child: _buildRightImage(context, isDesktop),
+          child: _buildRightImage(context),
         ),
       ],
     );
@@ -106,14 +117,14 @@ class _HomeSectionState extends ConsumerState<HomeSection>
   Widget _buildMobileLayout(BuildContext context) {
     return Column(
       children: [
-        _buildRightImage(context, false),
-        const SizedBox(height: 68),
-        _buildLeftContent(context, false),
+        _buildRightImage(context),
+        SizedBox(height: Responsive.spacing(context, 68)),
+        _buildLeftContent(context),
       ],
     );
   }
 
-  Widget _buildLeftContent(BuildContext context, bool isDesktop) {
+  Widget _buildLeftContent(BuildContext context) {
     final animationState = ref.watch(homeViewModelProvider);
 
     return Column(
@@ -123,47 +134,53 @@ class _HomeSectionState extends ConsumerState<HomeSection>
         OptimizedAnimatedWidget(
           opacity: animationState.headingOpacity,
           slideX: animationState.headingSlide,
-          child: _buildMainHeading(context, isDesktop),
+          child: _buildMainHeading(context),
         ),
 
-        const SizedBox(height: 16),
+        SizedBox(height: Responsive.spacing(context, 16)),
 
         // Description - Optimized Animation
         OptimizedAnimatedWidget(
           opacity: animationState.descriptionOpacity,
           slideX: animationState.descriptionSlide,
-          child: _buildDescription(context, isDesktop),
+          child: _buildDescription(context),
         ),
 
-        const SizedBox(height: 30),
+        SizedBox(height: Responsive.spacing(context, 30)),
 
         // Buttons - Optimized Animation
         OptimizedAnimatedWidget(
           opacity: animationState.buttonsOpacity,
           slideX: animationState.buttonsSlide,
-          child: _buildButtons(),
+          child: _buildButtons(context),
         ),
 
-        const SizedBox(height: 50),
+        SizedBox(height: Responsive.spacing(context, 50)),
 
         // Feature Highlights - Optimized Animation
         OptimizedAnimatedWidget(
           opacity: animationState.featuresOpacity,
           slideX: animationState.featuresSlide,
-          child: _buildFeatureHighlights(isDesktop),
+          child: _buildFeatureHighlights(context),
         ),
       ],
     );
   }
 
-  Widget _buildMainHeading(BuildContext context, bool isDesktop) {
+  Widget _buildMainHeading(BuildContext context) {
     return RichText(
       text: TextSpan(
-        children: [
+        children: Responsive.isTablet(context) || Responsive.isTabletLarge(context) ? [
           TextSpan(
-            text: 'Your Smile is Our\n',
+            text: 'Your Smile is Our ',
             style: GoogleFonts.poppins(
-              fontSize: isDesktop ? 54 : 35,
+              fontSize: Responsive.fontSize(context, 54,
+                mobileSmallScale: 0.6,
+                mobileLargeScale: 0.65,
+                tabletScale: 0.8,
+                tabletLargeScale: 0.85,
+                desktopScale: 1.0,
+              ),
               fontWeight: FontWeight.bold,
               color: Colors.black,
               height: 0.3,
@@ -172,7 +189,43 @@ class _HomeSectionState extends ConsumerState<HomeSection>
           TextSpan(
             text: 'Priority',
             style: GoogleFonts.poppins(
-              fontSize: isDesktop ? 50 : 32,
+              fontSize: Responsive.fontSize(context, 50,
+                mobileSmallScale: 0.6,
+                mobileLargeScale: 0.64,
+                tabletScale: 0.8,
+                tabletLargeScale: 0.84,
+                desktopScale: 1.0,
+              ),
+              fontWeight: FontWeight.bold,
+              color: AppColors.primaryColor,
+            ),
+          ),
+        ] : [
+          TextSpan(
+            text: 'Your Smile is Our\n',
+            style: GoogleFonts.poppins(
+              fontSize: Responsive.fontSize(context, 54,
+                mobileSmallScale: 0.6,
+                mobileLargeScale: 0.65,
+                tabletScale: 0.8,
+                tabletLargeScale: 0.85,
+                desktopScale: 1.0,
+              ),
+              fontWeight: FontWeight.bold,
+              color: Colors.black,
+              height: 0.3,
+            ),
+          ),
+          TextSpan(
+            text: 'Priority',
+            style: GoogleFonts.poppins(
+              fontSize: Responsive.fontSize(context, 50,
+                mobileSmallScale: 0.6,
+                mobileLargeScale: 0.64,
+                tabletScale: 0.8,
+                tabletLargeScale: 0.84,
+                desktopScale: 1.0,
+              ),
               fontWeight: FontWeight.bold,
               color: AppColors.primaryColor,
             ),
@@ -182,27 +235,33 @@ class _HomeSectionState extends ConsumerState<HomeSection>
     );
   }
 
-  Widget _buildDescription(BuildContext context, bool isDesktop) {
+  Widget _buildDescription(BuildContext context) {
     return Text(
       'Experience exceptional dental care with our team of expert dentists. We provide comprehensive, gentle, and personalized treatment in a modern, comfortable environment.',
       style: Theme.of(context).textTheme.bodyLarge?.copyWith(
-        fontSize: isDesktop ? 18 : 16,
+        fontSize: Responsive.fontSize(context, 18,
+          mobileSmallScale: 0.85,
+          mobileLargeScale: 0.9,
+          tabletScale: 0.95,
+          tabletLargeScale: 0.98,
+          desktopScale: 1.0,
+        ),
       ),
     );
   }
 
-  Widget _buildButtons() {
+  Widget _buildButtons(BuildContext context) {
     return Wrap(
-      spacing: 16,
-      runSpacing: 16,
+      spacing: Responsive.spacing(context, 16),
+      runSpacing: Responsive.spacing(context, 16),
       children: [
-        _buildPrimaryButton(),
-        _buildSecondaryButton(),
+        _buildPrimaryButton(context),
+        _buildSecondaryButton(context),
       ],
     );
   }
 
-  Widget _buildPrimaryButton() {
+  Widget _buildPrimaryButton(BuildContext context) {
     return Container(
       decoration: BoxDecoration(
         borderRadius: BorderRadius.circular(12),
@@ -216,18 +275,52 @@ class _HomeSectionState extends ConsumerState<HomeSection>
       ),
       child: ElevatedButton.icon(
         onPressed: () {},
-        icon: const Icon(Icons.calendar_today, size: 20, color: AppColors.whiteColor),
-        label: const Text(
+        icon: Icon(
+          Icons.calendar_today,
+          size: Responsive.valueWhen(context,
+            mobile: 18,
+            mobileSmall: 16,
+            mobileLarge: 18,
+            tablet: 19,
+            tabletLarge: 20,
+            desktop: 20,
+          ),
+          color: AppColors.whiteColor,
+        ),
+        label: Text(
           'Book Appointment',
           style: TextStyle(
-            fontSize: 16,
+            fontSize: Responsive.fontSize(context, 16,
+              mobileSmallScale: 0.9,
+              mobileLargeScale: 0.95,
+              tabletScale: 1.0,
+              tabletLargeScale: 1.0,
+              desktopScale: 1.0,
+            ),
             fontWeight: FontWeight.w600,
             color: AppColors.whiteColor,
           ),
         ),
         style: ElevatedButton.styleFrom(
           backgroundColor: AppColors.primaryColor,
-          padding: const EdgeInsets.symmetric(horizontal: 32, vertical: 16),
+          padding: EdgeInsets.symmetric(
+            horizontal: Responsive.valueWhen(context,
+              mobile: 24,
+              mobileSmall: 20,
+              mobileLarge: 26,
+              tablet: 28,
+              tabletLarge: 30,
+              desktop: 32,
+            ),
+            vertical: Responsive.valueWhen(context,
+              mobile: 12,
+              mobileSmall: 10,
+              mobileLarge: 14,
+              tablet: 14,
+              tabletLarge: 15,
+              desktop: 16,
+            ),
+          ),
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(12),
           ),
@@ -236,20 +329,43 @@ class _HomeSectionState extends ConsumerState<HomeSection>
     );
   }
 
-  Widget _buildSecondaryButton() {
+  Widget _buildSecondaryButton(BuildContext context) {
     return OutlinedButton(
       onPressed: () {},
       style: OutlinedButton.styleFrom(
-        padding: const EdgeInsets.symmetric(horizontal: 32, vertical: 16),
+        padding: EdgeInsets.symmetric(
+          horizontal: Responsive.valueWhen(context,
+            mobile: 24,
+            mobileSmall: 20,
+            mobileLarge: 26,
+            tablet: 28,
+            tabletLarge: 30,
+            desktop: 32,
+          ),
+          vertical: Responsive.valueWhen(context,
+            mobile: 12,
+            mobileSmall: 10,
+            mobileLarge: 14,
+            tablet: 14,
+            tabletLarge: 15,
+            desktop: 16,
+          ),
+        ),
         side: const BorderSide(color: AppColors.primaryColor, width: 2),
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(12),
         ),
       ),
-      child: const Text(
+      child: Text(
         'View Services',
         style: TextStyle(
-          fontSize: 16,
+          fontSize: Responsive.fontSize(context, 16,
+            mobileSmallScale: 0.9,
+            mobileLargeScale: 0.95,
+            tabletScale: 1.0,
+            tabletLargeScale: 1.0,
+            desktopScale: 1.0,
+          ),
           fontWeight: FontWeight.w600,
           color: AppColors.primaryColor,
         ),
@@ -257,21 +373,28 @@ class _HomeSectionState extends ConsumerState<HomeSection>
     );
   }
 
-  Widget _buildFeatureHighlights(bool isDesktop) {
+  Widget _buildFeatureHighlights(BuildContext context) {
     return Row(
       children: [
         _buildFeatureItem(
           Icons.shield_outlined,
           'Safe Care',
           'Latest\nprotocols',
-          isDesktop,
+          context,
         ),
-        SizedBox(width: isDesktop ? 60 : 40),
+        SizedBox(width: Responsive.valueWhen(context,
+          mobile: 30,
+          mobileSmall: 25,
+          mobileLarge: 35,
+          tablet: 45,
+          tabletLarge: 55,
+          desktop: 60,
+        )),
         _buildFeatureItem(
           Icons.people_outline,
           'Expert Team',
           'Certified\nprofessionals',
-          isDesktop,
+          context,
         ),
       ],
     );
@@ -281,13 +404,20 @@ class _HomeSectionState extends ConsumerState<HomeSection>
       IconData icon,
       String title,
       String subtitle,
-      bool isDesktop,
+      BuildContext context,
       ) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Container(
-          padding: const EdgeInsets.all(12),
+          padding: EdgeInsets.all(Responsive.valueWhen(context,
+            mobile: 10,
+            mobileSmall: 8,
+            mobileLarge: 11,
+            tablet: 11,
+            tabletLarge: 12,
+            desktop: 12,
+          )),
           decoration: BoxDecoration(
             color: AppColors.primaryColor.withOpacity(0.1),
             borderRadius: BorderRadius.circular(12),
@@ -295,23 +425,42 @@ class _HomeSectionState extends ConsumerState<HomeSection>
           child: Icon(
             icon,
             color: AppColors.primaryColor,
-            size: isDesktop ? 24 : 20,
+            size: Responsive.valueWhen(context,
+              mobile: 18,
+              mobileSmall: 16,
+              mobileLarge: 20,
+              tablet: 33,
+              tabletLarge: 34,
+              desktop: 24,
+            ),
           ),
         ),
-        const SizedBox(height: 16),
+        SizedBox(height: Responsive.spacing(context, 16)),
         Text(
           title,
           style: TextStyle(
-            fontSize: isDesktop ? 18 : 16,
+            fontSize: Responsive.fontSize(context, 18,
+              mobileSmallScale: 0.85,
+              mobileLargeScale: 0.9,
+              tabletScale: 0.95,
+              tabletLargeScale: 0.98,
+              desktopScale: 1.0,
+            ),
             fontWeight: FontWeight.w600,
             color: const Color(0xFF2D3748),
           ),
         ),
-        const SizedBox(height: 4),
+        SizedBox(height: Responsive.spacing(context, 4)),
         Text(
           subtitle,
           style: TextStyle(
-            fontSize: isDesktop ? 14 : 12,
+            fontSize: Responsive.fontSize(context, 14,
+              mobileSmallScale: 0.85,
+              mobileLargeScale: 0.9,
+              tabletScale: 0.95,
+              tabletLargeScale: 0.98,
+              desktopScale: 1.0,
+            ),
             color: const Color(0xFF4A5568),
             height: 1.4,
           ),
@@ -320,10 +469,10 @@ class _HomeSectionState extends ConsumerState<HomeSection>
     );
   }
 
-  Widget _buildRightImage(BuildContext context, bool isDesktop) {
+  Widget _buildRightImage(BuildContext context) {
     final animationState = ref.watch(homeViewModelProvider);
 
-    final imageStack = _buildImageStack(context, isDesktop);
+    final imageStack = _buildImageStack(context);
 
     return OptimizedAnimatedWidget(
       opacity: animationState.imageOpacity,
@@ -332,12 +481,19 @@ class _HomeSectionState extends ConsumerState<HomeSection>
     );
   }
 
-  Widget _buildImageStack(BuildContext context, bool isDesktop) {
+  Widget _buildImageStack(BuildContext context) {
     return Stack(
       clipBehavior: Clip.none,
       children: [
         Container(
-          height: isDesktop ? 600 : 400,
+          height: Responsive.valueWhen(context,
+            mobile: 350,
+            mobileSmall: 300,
+            mobileLarge: 380,
+            tablet: 510,
+            tabletLarge: 560,
+            desktop: 600,
+          ),
           decoration: BoxDecoration(
             borderRadius: BorderRadius.circular(20),
             boxShadow: const [
@@ -442,8 +598,22 @@ class _HomeSectionState extends ConsumerState<HomeSection>
         // Only show info cards after image loads to prevent layout shift
         if (_imageLoaded) ...[
           Positioned(
-            top: Responsive.isMobile(context) ? -10 : -20,
-            right: Responsive.isMobile(context) ? -10 : -20,
+            top: Responsive.valueWhen(context,
+              mobile: -10,
+              mobileSmall: -8,
+              mobileLarge: -12,
+              tablet: -15,
+              tabletLarge: -18,
+              desktop: -20,
+            ),
+            right: Responsive.valueWhen(context,
+              mobile: -10,
+              mobileSmall: -8,
+              mobileLarge: -12,
+              tablet: -15,
+              tabletLarge: -18,
+              desktop: -20,
+            ),
             child: _buildInfoCard(
               context,
               '5000+',
@@ -454,8 +624,22 @@ class _HomeSectionState extends ConsumerState<HomeSection>
           ),
 
           Positioned(
-            bottom: -20,
-            left: Responsive.isMobile(context) ? -14 : -20,
+            bottom: Responsive.valueWhen(context,
+              mobile: -16,
+              mobileSmall: -14,
+              mobileLarge: -18,
+              tablet: -18,
+              tabletLarge: -19,
+              desktop: -20,
+            ),
+            left: Responsive.valueWhen(context,
+              mobile: -14,
+              mobileSmall: -12,
+              mobileLarge: -16,
+              tablet: -17,
+              tabletLarge: -18,
+              desktop: -20,
+            ),
             child: _buildInfoCard(
               context,
               '10+',
@@ -477,7 +661,14 @@ class _HomeSectionState extends ConsumerState<HomeSection>
       bool isTopCard,
       ) {
     return Container(
-      padding: EdgeInsets.all(Responsive.isMobile(context) ? 12 : 18),
+      padding: EdgeInsets.all(Responsive.valueWhen(context,
+        mobile: 12,
+        mobileSmall: 10,
+        mobileLarge: 14,
+        tablet: 15,
+        tabletLarge: 16,
+        desktop: 18,
+      )),
       decoration: BoxDecoration(
         color: AppColors.whiteColor,
         borderRadius: BorderRadius.circular(16),
@@ -497,17 +688,29 @@ class _HomeSectionState extends ConsumerState<HomeSection>
           Text(
             number,
             style: TextStyle(
-              fontSize: Responsive.isMobile(context) ? 26 : 32,
+              fontSize: Responsive.fontSize(context, 32,
+                mobileSmallScale: 0.75,
+                mobileLargeScale: 0.85,
+                tabletScale: 0.9,
+                tabletLargeScale: 0.95,
+                desktopScale: 1.0,
+              ),
               fontWeight: FontWeight.bold,
               color: color,
               height: 1,
             ),
           ),
-          const SizedBox(height: 4),
+          SizedBox(height: Responsive.spacing(context, 4)),
           Text(
             text,
             style: TextStyle(
-              fontSize: Responsive.isMobile(context) ? 12 : 14,
+              fontSize: Responsive.fontSize(context, 14,
+                mobileSmallScale: 0.8,
+                mobileLargeScale: 0.9,
+                tabletScale: 0.95,
+                tabletLargeScale: 0.98,
+                desktopScale: 1.0,
+              ),
               color: const Color(0xFF4A5568),
               fontWeight: FontWeight.w500,
             ),
