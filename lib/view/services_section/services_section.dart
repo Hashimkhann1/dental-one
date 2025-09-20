@@ -1,79 +1,180 @@
 import 'package:dental_one/res/app_colors/app_colors.dart';
 import 'package:dental_one/res/responsive/responsive.dart';
+import 'package:dental_one/view_model/service_view_model/service_view_model.dart';
+
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:google_fonts/google_fonts.dart';
 
-class ServicesSection extends StatelessWidget {
+class ServicesSection extends ConsumerStatefulWidget {
   const ServicesSection({super.key});
 
   @override
+  ConsumerState<ServicesSection> createState() => _ServicesSectionState();
+}
+
+class _ServicesSectionState extends ConsumerState<ServicesSection> {
+  late ScrollController _scrollController;
+  bool _hasTriggered = false;
+
+  @override
+  void initState() {
+    super.initState();
+    // Find the nearest ScrollController from the widget tree
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      _scrollController = Scrollable.of(context).widget.controller ?? ScrollController();
+      _scrollController.addListener(_onScroll);
+    });
+  }
+
+  @override
+  void dispose() {
+    _scrollController.removeListener(_onScroll);
+    super.dispose();
+  }
+
+  void _onScroll() {
+    if (_hasTriggered) return;
+
+    final RenderBox? renderBox = context.findRenderObject() as RenderBox?;
+    if (renderBox == null) return;
+
+    final position = renderBox.localToGlobal(Offset.zero);
+    final screenHeight = MediaQuery.of(context).size.height;
+
+    // Trigger animation when section is 20% visible from bottom
+    if (position.dy < screenHeight * 0.8) {
+      _hasTriggered = true;
+      ref.read(servicesAnimationProvider.notifier).triggerSectionVisible();
+    }
+  }
+
+  @override
   Widget build(BuildContext context) {
+    final animationState = ref.watch(servicesAnimationProvider);
+
     return Container(
       width: double.infinity,
       color: const Color(0xFFF8F9FA),
       padding: EdgeInsets.symmetric(
-        horizontal: _getHorizontalPadding(context),
-        vertical: Responsive.isMobile(context) ? 60 : 80,
+        horizontal: Responsive.valueWhen(context,
+          mobile: 20,
+          mobileSmall: 16,
+          mobileLarge: 24,
+          tablet: 24,
+          tabletLarge: 50,
+          desktop: 80,
+        ),
+        vertical: Responsive.valueWhen(context,
+          mobile: 60,
+          mobileSmall: 50,
+          mobileLarge: 60,
+          tablet: 80,
+          tabletLarge: 80,
+          desktop: 80,
+        ),
       ),
       child: Column(
         children: [
-          // Header Section
-          _buildHeaderSection(context),
+          // Header Section with Animation
+          _buildAnimatedHeaderSection(context, animationState.isHeaderVisible),
 
-          SizedBox(height: Responsive.isMobile(context) ? 40 : 60),
+          SizedBox(height: Responsive.spacing(context, 50,
+            mobileSmallMultiplier: 0.8,
+            mobileLargeMultiplier: 0.8,
+            tabletMultiplier: 1.2,
+            tabletLargeMultiplier: 1.2,
+            desktopMultiplier: 1.2,
+          )),
 
-          // Service Cards Grid
+          // Service Cards Grid with Animation
           Padding(
-            padding: EdgeInsets.symmetric(horizontal: Responsive.isMobile(context) ? 20 :  Responsive.isTablet(context) ? 10 : 140.0),
-            child: _buildServicesGrid(context),
+            padding: EdgeInsets.symmetric(
+              horizontal: Responsive.valueWhen(context,
+                mobile: 20,
+                mobileSmall: 16,
+                mobileLarge: 20,
+                tablet: 4,
+                tabletLarge: 30,
+                desktop: 140,
+              ),
+            ),
+            child: _buildAnimatedServicesGrid(context, animationState),
           ),
 
-          SizedBox(height: Responsive.isMobile(context) ? 60 : 80),
+          SizedBox(height: Responsive.spacing(context, 70,
+            mobileSmallMultiplier: 0.85,
+            mobileLargeMultiplier: 0.85,
+            tabletMultiplier: 1.15,
+            tabletLargeMultiplier: 1.15,
+            desktopMultiplier: 1.15,
+          )),
 
-          // Footer Section
-          _buildFooterSection(context),
+          // Footer Section with Animation
+          _buildAnimatedFooterSection(context, animationState.isFooterVisible),
         ],
       ),
     );
   }
 
-  Widget _buildHeaderSection(BuildContext context) {
-    return Column(
-      children: [
-        Text(
-          'Our Dental Services',
-          style: GoogleFonts.inter(
-            fontSize: Responsive.isMobile(context) ? 32 : (Responsive.isTablet(context) ? 36 : 40),
-            fontWeight: FontWeight.bold,
-            color: const Color(0xFF2D3748),
-          ),
-          textAlign: TextAlign.center,
-        ),
-
-        const SizedBox(height: 16),
-
-        Container(
-          constraints: const BoxConstraints(maxWidth: 800),
-          child: Text(
-            'We offer a comprehensive range of dental services to meet all your oral health needs. From routine cleanings to advanced procedures, our expert team is here to help you achieve and maintain optimal dental health.',
-            style: GoogleFonts.inter(
-              fontSize: Responsive.isMobile(context) ? 16 : 18,
-              color: const Color(0xFF718096),
-              height: 1.6,
+  Widget _buildAnimatedHeaderSection(BuildContext context, bool isVisible) {
+    return AnimatedOpacity(
+      opacity: isVisible ? 1.0 : 0.0,
+      duration: const Duration(milliseconds: 600),
+      child: AnimatedContainer(
+        duration: const Duration(milliseconds: 600),
+        curve: Curves.easeOutCubic,
+        transform: Matrix4.identity()..translate(0.0, isVisible ? 0.0 : -30.0),
+        child: Column(
+          children: [
+            Text(
+              'Our Dental Services',
+              style: GoogleFonts.inter(
+                fontSize: Responsive.fontSize(context, 40,
+                  mobileSmallScale: 0.8,    // 32px
+                  mobileLargeScale: 0.85,   // 34px
+                  tabletScale: 0.9,         // 36px
+                  tabletLargeScale: 0.95,   // 38px
+                  desktopScale: 1.0,        // 40px
+                ),
+                fontWeight: FontWeight.bold,
+                color: const Color(0xFF2D3748),
+              ),
+              textAlign: TextAlign.center,
             ),
-            textAlign: TextAlign.center,
-          ),
+
+            SizedBox(height: Responsive.spacing(context, 16)),
+
+            Container(
+              constraints: const BoxConstraints(maxWidth: 800),
+              child: Text(
+                'We offer a comprehensive range of dental services to meet all your oral health needs. From routine cleanings to advanced procedures, our expert team is here to help you achieve and maintain optimal dental health.',
+                style: GoogleFonts.inter(
+                  fontSize: Responsive.fontSize(context, 18,
+                    mobileSmallScale: 0.85,   // 15px
+                    mobileLargeScale: 0.9,    // 16px
+                    tabletScale: 1.0,         // 18px
+                    tabletLargeScale: 1.0,    // 18px
+                    desktopScale: 1.0,        // 18px
+                  ),
+                  color: const Color(0xFF718096),
+                  height: 1.6,
+                ),
+                textAlign: TextAlign.center,
+              ),
+            ),
+          ],
         ),
-      ],
+      ),
     );
   }
 
-  Widget _buildServicesGrid(BuildContext context) {
+  Widget _buildAnimatedServicesGrid(BuildContext context, ServicesAnimationState animationState) {
     final services = [
       {
         'icon': Icons.favorite_outline,
         'title': 'General Dentistry',
-        'description': 'Comprehensive oral health care including cleanings, fillings, and preventive treatments.',
+        'description': 'Complete oral care with cleanings, fillings, and preventive treatments.',
         'features': ['Regular Cleanings', 'Cavity Fillings', 'Oral Exams', 'Fluoride Treatments'],
       },
       {
@@ -110,170 +211,208 @@ class ServicesSection extends StatelessWidget {
 
     if (Responsive.isMobile(context)) {
       return Column(
-        children: services.map((service) =>
-            Padding(
-              padding: EdgeInsets.only(bottom: Responsive.isMobile(context) ? 18 : 24),
-              child: _buildServiceCard(service, context),
-            ),
-        ).toList(),
-      );
-    } else if (Responsive.isTablet(context)) {
-      return Column(
-        children: [
-          Row(
-            children: services.take(2).map((service) =>
-                Expanded(
-                  child: Padding(
-                    padding: const EdgeInsets.symmetric(horizontal: 12),
-                    child: _buildServiceCard(service, context),
-                  ),
-                ),
-            ).toList(),
-          ),
-          const SizedBox(height: 24),
-          Row(
-            children: services.skip(2).take(2).map((service) =>
-                Expanded(
-                  child: Padding(
-                    padding: const EdgeInsets.symmetric(horizontal: 12),
-                    child: _buildServiceCard(service, context),
-                  ),
-                ),
-            ).toList(),
-          ),
-          const SizedBox(height: 24),
-          Row(
-            children: services.skip(4).take(2).map((service) =>
-                Expanded(
-                  child: Padding(
-                    padding: const EdgeInsets.symmetric(horizontal: 12),
-                    child: _buildServiceCard(service, context),
-                  ),
-                ),
-            ).toList(),
-          ),
-        ],
+        children: services.asMap().entries.map((entry) {
+          final index = entry.key;
+          final service = entry.value;
+          final isVisible = animationState.cardVisibilities.length > index
+              ? animationState.cardVisibilities[index]
+              : false;
+
+          return Padding(
+            padding: EdgeInsets.only(bottom: Responsive.spacing(context, 20)),
+            child: _buildAnimatedServiceCard(service, context, isVisible, index),
+          );
+        }).toList(),
       );
     } else {
-      return Column(
-        children: [
-          Row(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: services.take(3).map((service) =>
-                Expanded(
-                  child: Padding(
-                    padding: const EdgeInsets.symmetric(horizontal: 12),
-                    child: _buildServiceCard(service, context),
-                  ),
-                ),
-            ).toList(),
-          ),
-          const SizedBox(height: 24),
-          Row(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: services.skip(3).take(3).map((service) =>
-                Expanded(
-                  child: Padding(
-                    padding: const EdgeInsets.symmetric(horizontal: 12),
-                    child: _buildServiceCard(service, context),
-                  ),
-                ),
-            ).toList(),
-          ),
-        ],
+      // Use LayoutBuilder for better responsive handling
+      return LayoutBuilder(
+        builder: (context, constraints) {
+          final crossAxisCount = Responsive.valueWhen(context,
+            mobile: 1,
+            tablet: 3,
+            tabletLarge: 3,
+            desktop: 3,
+          );
+
+          final spacing = Responsive.spacing(context, 20);
+          final availableWidth = constraints.maxWidth;
+          final totalSpacing = spacing * (crossAxisCount - 1);
+          final cardWidth = (availableWidth - totalSpacing) / crossAxisCount;
+
+          return Wrap(
+            spacing: spacing,
+            runSpacing: spacing,
+            children: services.asMap().entries.map((entry) {
+              final index = entry.key;
+              final service = entry.value;
+              final isVisible = animationState.cardVisibilities.length > index
+                  ? animationState.cardVisibilities[index]
+                  : false;
+
+              return SizedBox(
+                width: cardWidth,
+                child: _buildAnimatedServiceCard(service, context, isVisible, index),
+              );
+            }).toList(),
+          );
+        },
       );
     }
   }
 
-  Widget _buildServiceCard(Map<String, dynamic> service, BuildContext context) {
-    return _ServiceCard(
-      icon: service['icon'] as IconData,
-      title: service['title'] as String,
-      description: service['description'] as String,
-      features: List<String>.from(service['features']),
-      context: context,
-    );
-  }
-
-  Widget _buildFooterSection(BuildContext context) {
-    return Container(
-      width: Responsive.isMobile(context) ? MediaQuery.of(context).size.width * 0.84 : MediaQuery.of(context).size.width * 0.74,
-      padding: EdgeInsets.all(Responsive.isMobile(context) ? 32 : 42),
-      decoration: BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.circular(16),
-        boxShadow: [
-          BoxShadow(
-            color: Colors.black.withOpacity(0.05),
-            blurRadius: 10,
-            spreadRadius: 0,
-            offset: const Offset(0, 4),
-          ),
-        ],
-      ),
-      child: Column(
-        children: [
-          Text(
-            "Don't See What You Need?",
-            style: GoogleFonts.inter(
-              fontSize: Responsive.isMobile(context) ? 22 : 28,
-              fontWeight: FontWeight.bold,
-              color: const Color(0xFF2D3748),
-            ),
-            textAlign: TextAlign.center,
-          ),
-
-          SizedBox(height: Responsive.isMobile(context) ? 10 : 16),
-
-          Container(
-            constraints: const BoxConstraints(maxWidth: 600),
-            child: Text(
-              'We offer many additional specialized services. Contact us to discuss your specific dental needs and we\'ll be happy to help you find the right treatment plan.',
-              style: GoogleFonts.inter(
-                fontSize: Responsive.isMobile(context) ? 14 : 16,
-                color: const Color(0xFF718096),
-                height: 1.6,
-              ),
-              textAlign: TextAlign.center,
-            ),
-          ),
-
-          const SizedBox(height: 32),
-
-          ElevatedButton(
-            onPressed: () {
-              // Handle contact action
-            },
-            style: ElevatedButton.styleFrom(
-              backgroundColor: const Color(0xFF3182CE),
-              foregroundColor: Colors.white,
-              padding: EdgeInsets.symmetric(
-                horizontal: Responsive.isMobile(context) ? 32 : 40,
-                vertical: Responsive.isMobile(context) ? 16 : 18,
-              ),
-              shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(12),
-              ),
-              elevation: 0,
-            ),
-            child: Text(
-              'Contact Us Today',
-              style: GoogleFonts.inter(
-                fontSize: Responsive.isMobile(context) ? 14 : 16,
-                fontWeight: FontWeight.w600,
-              ),
-            ),
-          ),
-        ],
+  Widget _buildAnimatedServiceCard(Map<String, dynamic> service, BuildContext context, bool isVisible, int index) {
+    return AnimatedOpacity(
+      opacity: isVisible ? 1.0 : 0.0,
+      duration: Duration(milliseconds: 400 + (index * 100)), // Stagger animation
+      child: AnimatedContainer(
+        duration: Duration(milliseconds: 600 + (index * 100)),
+        curve: Curves.easeOutCubic,
+        transform: Matrix4.identity()..translate(0.0, isVisible ? 0.0 : 50.0),
+        child: _ServiceCard(
+          icon: service['icon'] as IconData,
+          title: service['title'] as String,
+          description: service['description'] as String,
+          features: List<String>.from(service['features']),
+          context: context,
+        ),
       ),
     );
   }
 
-  // Helper method for responsive design using your Responsive class
-  double _getHorizontalPadding(BuildContext context) {
-    if (Responsive.isMobile(context)) return 20;
-    if (Responsive.isTablet(context)) return 30;
-    return 80;
+  Widget _buildAnimatedFooterSection(BuildContext context, bool isVisible) {
+    return AnimatedOpacity(
+      opacity: isVisible ? 1.0 : 0.0,
+      duration: const Duration(milliseconds: 600),
+      child: AnimatedContainer(
+        duration: const Duration(milliseconds: 600),
+        curve: Curves.easeOutCubic,
+        transform: Matrix4.identity()..translate(0.0, isVisible ? 0.0 : 30.0),
+        child: Container(
+          width: Responsive.valueWhen(context,
+            mobile: MediaQuery.of(context).size.width * 0.84,
+            mobileSmall: MediaQuery.of(context).size.width * 0.9,
+            mobileLarge: MediaQuery.of(context).size.width * 0.82,
+            tablet: MediaQuery.of(context).size.width * 0.92,
+            tabletLarge: MediaQuery.of(context).size.width * 0.9,
+            desktop: MediaQuery.of(context).size.width * 0.74,
+          ),
+          padding: EdgeInsets.all(Responsive.valueWhen(context,
+            mobile: 32,
+            mobileSmall: 24,
+            mobileLarge: 36,
+            tablet: 38,
+            tabletLarge: 40,
+            desktop: 42,
+          )),
+          decoration: BoxDecoration(
+            color: Colors.white,
+            borderRadius: BorderRadius.circular(16),
+            boxShadow: [
+              BoxShadow(
+                color: Colors.black.withOpacity(0.05),
+                blurRadius: 10,
+                spreadRadius: 0,
+                offset: const Offset(0, 4),
+              ),
+            ],
+          ),
+          child: Column(
+            children: [
+              Text(
+                "Don't See What You Need?",
+                style: GoogleFonts.inter(
+                  fontSize: Responsive.fontSize(context, 28,
+                    mobileSmallScale: 0.75,   // 21px
+                    mobileLargeScale: 0.8,    // 22px
+                    tabletScale: 0.9,         // 25px
+                    tabletLargeScale: 0.95,   // 27px
+                    desktopScale: 1.0,        // 28px
+                  ),
+                  fontWeight: FontWeight.bold,
+                  color: const Color(0xFF2D3748),
+                ),
+                textAlign: TextAlign.center,
+              ),
+
+              SizedBox(height: Responsive.spacing(context, 13,
+                mobileSmallMultiplier: 0.8,
+                mobileLargeMultiplier: 0.8,
+                tabletMultiplier: 1.2,
+                tabletLargeMultiplier: 1.2,
+                desktopMultiplier: 1.2,
+              )),
+
+              Container(
+                constraints: const BoxConstraints(maxWidth: 600),
+                child: Text(
+                  'We offer many additional specialized services. Contact us to discuss your specific dental needs and we\'ll be happy to help you find the right treatment plan.',
+                  style: GoogleFonts.inter(
+                    fontSize: Responsive.fontSize(context, 16,
+                      mobileSmallScale: 0.85,   // 14px
+                      mobileLargeScale: 0.9,    // 14px
+                      tabletScale: 1.0,         // 16px
+                      tabletLargeScale: 1.0,    // 16px
+                      desktopScale: 1.0,        // 16px
+                    ),
+                    color: const Color(0xFF718096),
+                    height: 1.6,
+                  ),
+                  textAlign: TextAlign.center,
+                ),
+              ),
+
+              SizedBox(height: Responsive.spacing(context, 32)),
+
+              ElevatedButton(
+                onPressed: () {
+                  // Handle contact action
+                },
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: const Color(0xFF3182CE),
+                  foregroundColor: Colors.white,
+                  padding: EdgeInsets.symmetric(
+                    horizontal: Responsive.valueWhen(context,
+                      mobile: 32,
+                      mobileSmall: 28,
+                      mobileLarge: 34,
+                      tablet: 36,
+                      tabletLarge: 38,
+                      desktop: 40,
+                    ),
+                    vertical: Responsive.valueWhen(context,
+                      mobile: 16,
+                      mobileSmall: 14,
+                      mobileLarge: 16,
+                      tablet: 17,
+                      tabletLarge: 17,
+                      desktop: 18,
+                    ),
+                  ),
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(12),
+                  ),
+                  elevation: 0,
+                ),
+                child: Text(
+                  'Contact Us Today',
+                  style: GoogleFonts.inter(
+                    fontSize: Responsive.fontSize(context, 16,
+                      mobileSmallScale: 0.85,   // 14px
+                      mobileLargeScale: 0.9,    // 14px
+                      tabletScale: 0.95,        // 15px
+                      tabletLargeScale: 1.0,    // 16px
+                      desktopScale: 1.0,        // 16px
+                    ),
+                    fontWeight: FontWeight.w600,
+                  ),
+                ),
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
   }
 }
 
@@ -298,36 +437,55 @@ class _ServiceCard extends StatefulWidget {
 
 class _ServiceCardState extends State<_ServiceCard> {
   bool _isHovered = false;
+  bool _isButtonHovered = false;
 
   @override
   Widget build(BuildContext context) {
+    // Only enable hover effects on non-mobile devices
+    final enableHover = !Responsive.isMobile(context);
+
     return MouseRegion(
-      onEnter: (_) => setState(() => _isHovered = true),
-      onExit: (_) => setState(() => _isHovered = false),
+      onEnter: enableHover ? (_) => setState(() => _isHovered = true) : null,
+      onExit: enableHover ? (_) => setState(() => _isHovered = false) : null,
       child: AnimatedContainer(
         duration: const Duration(milliseconds: 200),
-        transform: Matrix4.identity()..scale(_isHovered ? 1.02 : 1.0),
+        transform: Matrix4.identity()..scale(_isHovered && enableHover ? 1.02 : 1.0),
         child: Container(
-          height: Responsive.isTablet(context) ? 440 : 420,
-          padding: const EdgeInsets.all(32),
+          padding: EdgeInsets.all(Responsive.valueWhen(context,
+            mobile: 26,
+            mobileSmall: 20,
+            mobileLarge: 27,
+            tablet: 12,
+            tabletLarge: 22,
+            desktop: 32,
+          )),
           decoration: BoxDecoration(
             color: Colors.white,
             borderRadius: BorderRadius.circular(16),
             boxShadow: [
               BoxShadow(
-                color: _isHovered ? Colors.black.withOpacity(0.1) : Colors.black.withOpacity(0.06),
-                blurRadius: _isHovered ? 20 : 4,
-                spreadRadius: _isHovered ? 1 : 0,
+                color: _isHovered && enableHover
+                    ? Colors.black.withOpacity(0.1)
+                    : Colors.black.withOpacity(0.06),
+                blurRadius: _isHovered && enableHover ? 20 : 4,
+                spreadRadius: _isHovered && enableHover ? 1 : 0,
                 offset: const Offset(0, 0),
               ),
             ],
           ),
           child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
+            crossAxisAlignment: CrossAxisAlignment.center,
             children: [
               // Icon
               Container(
-                padding: EdgeInsets.all(Responsive.isTablet(context) ? 12 : 16),
+                padding: EdgeInsets.all(Responsive.valueWhen(context,
+                  mobile: 16,
+                  mobileSmall: 14,
+                  mobileLarge: 16,
+                  tablet: 12,
+                  tabletLarge: 14,
+                  desktop: 16,
+                )),
                 decoration: BoxDecoration(
                   color: const Color(0xFF3182CE).withOpacity(0.1),
                   borderRadius: BorderRadius.circular(12),
@@ -335,40 +493,63 @@ class _ServiceCardState extends State<_ServiceCard> {
                 child: Icon(
                   widget.icon,
                   color: const Color(0xFF3182CE),
-                  size: Responsive.isTablet(context) ? 28 : 32,
+                  size: Responsive.valueWhen(context,
+                    mobile: 32,
+                    mobileSmall: 28,
+                    mobileLarge: 32,
+                    tablet: 28,
+                    tabletLarge: 30,
+                    desktop: 32,
+                  ),
                 ),
               ),
 
-              SizedBox(height: Responsive.isTablet(context) ? 18 : 24),
+              SizedBox(height: Responsive.spacing(context, 22,
+                tabletMultiplier: 0.8,
+                tabletLargeMultiplier: 0.9,
+              )),
 
               // Title
               Text(
                 widget.title,
                 style: GoogleFonts.inter(
-                  fontSize: Responsive.isMobile(context) ? 17 : Responsive.isTablet(context) ? 20 : 22,
+                  fontSize: Responsive.fontSize(context, 22,
+                    mobileSmallScale: 0.75,   // 17px
+                    mobileLargeScale: 0.8,    // 18px
+                    tabletScale: 0.9,         // 20px
+                    tabletLargeScale: 0.95,   // 21px
+                    desktopScale: 1.0,        // 22px
+                  ),
                   fontWeight: FontWeight.w700,
                   color: const Color(0xFF2D3748),
                 ),
+                textAlign: TextAlign.center,
               ),
 
-              const SizedBox(height: 12),
+              SizedBox(height: Responsive.spacing(context, 12)),
 
               // Description
               Text(
                 widget.description,
                 style: GoogleFonts.inter(
-                  fontSize: Responsive.isMobile(context) ? 14 : 15,
+                  fontSize: Responsive.fontSize(context, 15,
+                    mobileSmallScale: 0.9,    // 14px
+                    mobileLargeScale: 0.95,   // 14px
+                    tabletScale: 1.0,         // 15px
+                    tabletLargeScale: 1.0,    // 15px
+                    desktopScale: 1.05,       // 16px
+                  ),
                   color: const Color(0xFF718096),
                   height: 1.5,
                 ),
               ),
 
-              const SizedBox(height: 20),
+              SizedBox(height: Responsive.spacing(context, 20)),
 
               // Features
               ...widget.features.map((feature) =>
                   Padding(
-                    padding: const EdgeInsets.only(bottom: 8),
+                    padding: EdgeInsets.only(bottom: Responsive.spacing(context, 8)),
                     child: Row(
                       children: [
                         Container(
@@ -379,12 +560,18 @@ class _ServiceCardState extends State<_ServiceCard> {
                             shape: BoxShape.circle,
                           ),
                         ),
-                        const SizedBox(width: 12),
-                        Expanded(
+                        SizedBox(width: Responsive.spacing(context, 12)),
+                        Flexible(
                           child: Text(
                             feature,
                             style: GoogleFonts.inter(
-                              fontSize: Responsive.isMobile(context) ? 12 : 14,
+                              fontSize: Responsive.fontSize(context, 14,
+                                mobileSmallScale: 0.85,   // 12px
+                                mobileLargeScale: 0.9,    // 13px
+                                tabletScale: 1.0,         // 14px
+                                tabletLargeScale: 1.0,    // 14px
+                                desktopScale: 1.05,       // 15px
+                              ),
                               color: const Color(0xFF4A5568),
                             ),
                           ),
@@ -394,73 +581,65 @@ class _ServiceCardState extends State<_ServiceCard> {
                   ),
               ),
 
-              const Spacer(),
+              SizedBox(height: Responsive.spacing(context, 24)),
 
               // Learn More Button
               Container(
                 width: double.infinity,
                 child: MouseRegion(
                   cursor: SystemMouseCursors.click,
-                  child: Builder(
-                    builder: (context) {
-                      bool isButtonHovered = false;
-                      return StatefulBuilder(
-                        builder: (context, setButtonState) {
-                          return AnimatedContainer(
-                            duration: const Duration(milliseconds: 300),
-                            curve: Curves.easeInOut,
-                            decoration: BoxDecoration(
-                              color: isButtonHovered
-                                  ? const Color(0xFF2F855A)  // Darker green on hover
-                                  : const Color(0xFFFFFFFF), // White background
-                              borderRadius: BorderRadius.circular(8),
-                            ),
-                            child: TextButton(
-                              onPressed: () {
-                                // Handle learn more action
-                              },
-                              onHover: (hovered) {
-                                setButtonState(() {
-                                  isButtonHovered = hovered;
-                                });
-                              },
-                              style: TextButton.styleFrom(
-                                padding: const EdgeInsets.symmetric(vertical: 12),
-                                backgroundColor: Colors.transparent,
-                                shape: RoundedRectangleBorder(
-                                  borderRadius: BorderRadius.circular(8),
-                                ),
+                  onEnter: enableHover ? (_) => setState(() => _isButtonHovered = true) : null,
+                  onExit: enableHover ? (_) => setState(() => _isButtonHovered = false) : null,
+                  child: AnimatedContainer(
+                    duration: const Duration(milliseconds: 300),
+                    curve: Curves.easeInOut,
+                    decoration: BoxDecoration(
+                      color: _isButtonHovered && enableHover
+                          ? const Color(0xFF2F855A)
+                          : Colors.white,
+                      borderRadius: BorderRadius.circular(8),
+                    ),
+                    child: TextButton(
+                      onPressed: () {
+                        // Handle learn more action
+                      },
+                      style: TextButton.styleFrom(
+                        padding: EdgeInsets.symmetric(vertical: Responsive.spacing(context, 12)),
+                        backgroundColor: Colors.transparent,
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(8),
+                        ),
+                      ),
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          Text(
+                            'Learn More',
+                            style: GoogleFonts.inter(
+                              fontSize: Responsive.fontSize(context, 15,
+                                mobileSmallScale: 0.9,    // 14px
+                                mobileLargeScale: 0.95,   // 14px
+                                tabletScale: 1.0,         // 15px
+                                tabletLargeScale: 1.0,    // 15px
+                                desktopScale: 1.05,       // 16px
                               ),
-                              child: Row(
-                                mainAxisAlignment: MainAxisAlignment.center,
-                                children: [
-                                  AnimatedDefaultTextStyle(
-                                    duration: const Duration(milliseconds: 300),
-                                    curve: Curves.easeInOut,
-                                    style: GoogleFonts.inter(
-                                      fontSize: Responsive.isMobile(context) ? 14 : 15,
-                                      fontWeight: FontWeight.w600,
-                                      color: !isButtonHovered ? AppColors.primaryColor : Colors.white,
-                                    ),
-                                    child: const Text('Learn More'),
-                                  ),
-                                  const SizedBox(width: 8),
-                                  AnimatedSwitcher(
-                                    duration: const Duration(milliseconds: 300),
-                                    child: Icon(
-                                      Icons.arrow_forward,
-                                      color: !isButtonHovered ? AppColors.primaryColor : Colors.white,
-                                      size: 18,
-                                      key: ValueKey(isButtonHovered),
-                                    ),
-                                  ),
-                                ],
-                              ),
+                              fontWeight: FontWeight.w600,
+                              color: _isButtonHovered && enableHover
+                                  ? Colors.white
+                                  : AppColors.primaryColor,
                             ),
-                          );
-                        },
-                      );
-                    },
+                          ),
+                          SizedBox(width: Responsive.spacing(context, 8)),
+                          Icon(
+                            Icons.arrow_forward,
+                            color: _isButtonHovered && enableHover
+                                ? Colors.white
+                                : AppColors.primaryColor,
+                            size: 18,
+                          ),
+                        ],
+                      ),
+                    ),
                   ),
                 ),
               ),

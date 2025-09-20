@@ -14,68 +14,80 @@ class AboutSection extends ConsumerStatefulWidget {
 
 class _AboutSectionState extends ConsumerState<AboutSection> {
   bool _hasAnimated = false;
+  ScrollController? _scrollController;
 
   @override
   void initState() {
     super.initState();
-    // NO animations triggered here - only when user scrolls!
-
-    // Set up scroll listener after widget is built
+    // Defer scroll listener setup
     WidgetsBinding.instance.addPostFrameCallback((_) {
       _setupScrollListener();
     });
   }
 
+  @override
+  void dispose() {
+    _scrollController?.removeListener(_onScroll);
+    super.dispose();
+  }
+
   void _setupScrollListener() {
-    // Find the scroll controller from the nearest scrollable ancestor
-    final scrollableState = Scrollable.of(context);
-    if (scrollableState != null) {
-      final controller = scrollableState.widget.controller ?? ScrollController();
-      controller.addListener(_onScroll);
+    try {
+      final scrollableState = Scrollable.maybeOf(context);
+      if (scrollableState != null) {
+        _scrollController = scrollableState.widget.controller;
+        _scrollController?.addListener(_onScroll);
+      }
+    } catch (e) {
+      // Silently handle any setup errors
     }
   }
 
   void _onScroll() {
-    if (_hasAnimated) return; // Only trigger once
+    if (_hasAnimated || !mounted) return;
 
-    // Check if this widget is visible on screen
-    final renderBox = context.findRenderObject() as RenderBox?;
-    if (renderBox == null) return;
+    try {
+      final renderBox = context.findRenderObject() as RenderBox?;
+      if (renderBox == null || !renderBox.hasSize) return;
 
-    final size = renderBox.size;
-    final position = renderBox.localToGlobal(Offset.zero);
-    final screenHeight = MediaQuery.of(context).size.height;
+      final size = renderBox.size;
+      final position = renderBox.localToGlobal(Offset.zero);
+      final screenHeight = MediaQuery.of(context).size.height;
 
-    // Calculate visibility percentage
-    final visibleTop = position.dy < screenHeight ? position.dy : screenHeight;
-    final visibleBottom = position.dy + size.height > 0 ? position.dy + size.height : 0;
+      final visibleTop = position.dy < screenHeight ? position.dy : screenHeight;
+      final visibleBottom = position.dy + size.height > 0 ? position.dy + size.height : 0;
 
-    if (visibleTop < screenHeight && visibleBottom > 0) {
-      final visibleHeight = (visibleBottom - visibleTop).clamp(0.0, size.height);
-      final visibilityFraction = visibleHeight / size.height;
+      if (visibleTop < screenHeight && visibleBottom > 0) {
+        final visibleHeight = (visibleBottom - visibleTop).clamp(0.0, size.height);
+        final visibilityFraction = visibleHeight / size.height;
 
-      // Trigger animation when 30% of the widget is visible
-      if (visibilityFraction >= 0.3) {
-        _triggerAnimations();
+        if (visibilityFraction >= 0.3) {
+          _triggerAnimations();
+        }
       }
+    } catch (e) {
+      // Handle any scroll calculation errors
     }
   }
 
   void _triggerAnimations() {
-    if (!_hasAnimated) {
-      _hasAnimated = true;
-      print('🎬 About section animations triggered by scroll at 30% visibility!');
-      ref.read(aboutAnimationProvider.notifier).triggerAnimations();
+    if (!_hasAnimated && mounted) {
+      setState(() {
+        _hasAnimated = true;
+      });
+
+      // Use addPostFrameCallback to avoid triggering during build
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        if (mounted) {
+          ref.read(aboutAnimationProvider.notifier).triggerAnimations();
+        }
+      });
     }
   }
 
   @override
   Widget build(BuildContext context) {
     final animationState = ref.watch(aboutAnimationProvider);
-
-    print('Device size: ${Responsive.getDeviceSize(context)}');
-    print('Screen width: ${MediaQuery.of(context).size.width}');
-
 
     return Container(
       width: double.infinity,
@@ -86,29 +98,22 @@ class _AboutSectionState extends ConsumerState<AboutSection> {
           mobileSmall: 16,
           mobileLarge: 24,
           tablet: 40,
-          desktop: 80,
+          desktop: MediaQuery.of(context).size.width * 0.11,
         ),
         vertical: Responsive.valueWhen(context,
           mobile: 60,
           mobileSmall: 50,
           mobileLarge: 60,
           tablet: 80,
-          desktop: 100,
+          desktop: 80,
         ),
       ),
       child: Column(
         children: [
-          // Top section - Title and description
           _buildTopSection(context, animationState),
-
           SizedBox(height: Responsive.spacing(context, 60)),
-
-          // Features section - 4 cards
           _buildFeaturesSection(context, animationState),
-
           SizedBox(height: Responsive.spacing(context, 60)),
-
-          // Mission section
           _buildMissionSection(context, animationState),
         ],
       ),
@@ -118,7 +123,6 @@ class _AboutSectionState extends ConsumerState<AboutSection> {
   Widget _buildTopSection(BuildContext context, AboutAnimationState animationState) {
     return Column(
       children: [
-        // Title with animation
         FadeInSlideUp(
           isVisible: animationState.isTitleVisible,
           duration: const Duration(milliseconds: 800),
@@ -126,10 +130,10 @@ class _AboutSectionState extends ConsumerState<AboutSection> {
             'About DentalCare Clinic',
             style: GoogleFonts.poppins(
               fontSize: Responsive.fontSize(context, 36,
-                mobileSmallScale: 0.7,    // 25px for small phones
-                mobileLargeScale: 0.85,   // 30px for large phones
-                tabletScale: 0.95,        // 34px for tablets
-                desktopScale: 1.0,        // 36px for desktop
+                mobileSmallScale: 0.7,
+                mobileLargeScale: 0.85,
+                tabletScale: 0.95,
+                desktopScale: 1.0,
               ),
               fontWeight: FontWeight.bold,
               color: const Color(0xFF2D3748),
@@ -137,10 +141,7 @@ class _AboutSectionState extends ConsumerState<AboutSection> {
             textAlign: TextAlign.center,
           ),
         ),
-
         SizedBox(height: Responsive.spacing(context, 24)),
-
-        // Description with animation
         FadeInSlideUp(
           isVisible: animationState.isDescriptionVisible,
           duration: const Duration(milliseconds: 700),
@@ -151,10 +152,10 @@ class _AboutSectionState extends ConsumerState<AboutSection> {
               'For over a decade, DentalCare Clinic has been committed to providing exceptional dental care to our community. We combine advanced technology with a gentle, personalized approach to ensure every patient receives the best possible treatment in a comfortable and welcoming environment.',
               style: GoogleFonts.poppins(
                 fontSize: Responsive.fontSize(context, 16,
-                  mobileSmallScale: 0.9,    // 14px for small phones
-                  mobileLargeScale: 1.0,    // 16px for large phones
-                  tabletScale: 1.05,        // 17px for tablets
-                  desktopScale: 1.1,        // 18px for desktop
+                  mobileSmallScale: 0.9,
+                  mobileLargeScale: 1.0,
+                  tabletScale: 1.05,
+                  desktopScale: 1.1,
                 ),
                 color: Colors.black.withOpacity(0.6),
                 height: 1.6,
@@ -214,40 +215,46 @@ class _AboutSectionState extends ConsumerState<AboutSection> {
         }).toList(),
       );
     } else {
-      // Use GridView for equal height cards on tablet/desktop
-      return GridView.builder(
-        shrinkWrap: true,
-        physics: const NeverScrollableScrollPhysics(),
-        gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-          crossAxisCount: 4,
-          crossAxisSpacing: Responsive.valueWhen(context,
-            mobile: 16,
-            tablet: 13,
-            desktop: 16,
-          ),
-          mainAxisSpacing: 0,
-          childAspectRatio: Responsive.valueWhen(context,
-            mobile: 1.2,
-            tablet: 0.65,
-            tabletLarge: 0.7,
-            desktop: 0.95,
-          ),
-        ),
-        itemCount: features.length,
-        itemBuilder: (context, index) {
-          final feature = features[index];
-          return ScaleIn(
-            isVisible: animationState.featuresVisible.length > index ?
-            animationState.featuresVisible[index] : false,
-            duration: const Duration(milliseconds: 600),
-            initialScale: 0.9,
-            child: _buildFeatureCard(
-              feature['icon'] as IconData,
-              feature['title'] as String,
-              feature['subtitle'] as String,
-              context,
-              index,
-            ),
+      // Use LayoutBuilder to handle constraints properly
+      return LayoutBuilder(
+        builder: (context, constraints) {
+          final crossAxisCount = 4;
+          final spacing = Responsive.valueWhen(context,
+            mobile: 16.0,
+            mobileSmall: 13.0,
+            mobileLarge: 16.0,
+            tablet: 13.0,
+            tabletLarge: 16.0,
+            desktop: 16.0,
+          );
+          final availableWidth = constraints.maxWidth;
+          final totalSpacing = spacing * (crossAxisCount - 1);
+          final cardWidth = (availableWidth - totalSpacing) / crossAxisCount;
+
+          return Wrap(
+            spacing: spacing,
+            runSpacing: 20.0,
+            children: features.asMap().entries.map((entry) {
+              final index = entry.key;
+              final feature = entry.value;
+              return SizedBox(
+                width: cardWidth,
+                // Remove fixed height - let cards size themselves
+                child: ScaleIn(
+                  isVisible: animationState.featuresVisible.length > index ?
+                  animationState.featuresVisible[index] : false,
+                  duration: const Duration(milliseconds: 600),
+                  initialScale: 0.9,
+                  child: _buildFeatureCard(
+                    feature['icon'] as IconData,
+                    feature['title'] as String,
+                    feature['subtitle'] as String,
+                    context,
+                    index,
+                  ),
+                ),
+              );
+            }).toList(),
           );
         },
       );
@@ -312,7 +319,6 @@ class _AboutSectionState extends ConsumerState<AboutSection> {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        // Mission Title
         SlideInFromLeft(
           isVisible: animationState.isMissionVisible,
           duration: const Duration(milliseconds: 600),
@@ -321,20 +327,17 @@ class _AboutSectionState extends ConsumerState<AboutSection> {
             'Our Mission',
             style: GoogleFonts.poppins(
               fontSize: Responsive.fontSize(context, 32,
-                mobileSmallScale: 0.75,   // 24px
-                mobileLargeScale: 0.9,    // 29px
-                tabletScale: 1.0,         // 32px
-                desktopScale: 1.0,        // 32px
+                mobileSmallScale: 0.75,
+                mobileLargeScale: 0.9,
+                tabletScale: 1.0,
+                desktopScale: 1.0,
               ),
               fontWeight: FontWeight.bold,
               color: const Color(0xFF2D3748),
             ),
           ),
         ),
-
         SizedBox(height: Responsive.spacing(context, 20)),
-
-        // Mission Description
         SlideInFromLeft(
           isVisible: animationState.isMissionVisible,
           duration: const Duration(milliseconds: 700),
@@ -343,20 +346,17 @@ class _AboutSectionState extends ConsumerState<AboutSection> {
             'We believe that everyone deserves access to high-quality dental care. Our mission is to provide comprehensive, compassionate, and affordable dental services while educating our patients about optimal oral health practices.',
             style: GoogleFonts.poppins(
               fontSize: Responsive.fontSize(context, 14,
-                mobileSmallScale: 0.9,    // 13px
-                mobileLargeScale: 1.0,    // 14px
-                tabletScale: 1.0,         // 14px
-                desktopScale: 1.0,        // 14px
+                mobileSmallScale: 0.9,
+                mobileLargeScale: 1.0,
+                tabletScale: 1.0,
+                desktopScale: 1.0,
               ),
               color: Colors.black.withOpacity(0.6),
               height: 1.6,
             ),
           ),
         ),
-
         SizedBox(height: Responsive.spacing(context, 32)),
-
-        // Bullet Points with staggered animation
         SlideInFromLeft(
           isVisible: animationState.isMissionVisible,
           duration: const Duration(milliseconds: 800),
@@ -393,10 +393,10 @@ class _AboutSectionState extends ConsumerState<AboutSection> {
             text,
             style: GoogleFonts.poppins(
               fontSize: Responsive.fontSize(context, 15,
-                mobileSmallScale: 0.9,    // 14px
-                mobileLargeScale: 1.0,    // 15px
-                tabletScale: 1.0,         // 15px
-                desktopScale: 1.1,        // 16px
+                mobileSmallScale: 0.9,
+                mobileLargeScale: 1.0,
+                tabletScale: 1.0,
+                desktopScale: 1.1,
               ),
               color: AppColors.blackColor,
               height: 1.2,
@@ -468,10 +468,10 @@ class _AboutSectionState extends ConsumerState<AboutSection> {
           duration: const Duration(milliseconds: 1200),
           numberStyle: GoogleFonts.poppins(
             fontSize: Responsive.fontSize(context, 28,
-              mobileSmallScale: 0.75,   // 21px
-              mobileLargeScale: 0.9,    // 25px
+              mobileSmallScale: 0.75,
+              mobileLargeScale: 0.9,
               tabletScale: 0.79,
-              desktopScale: 1.1,        // 31px
+              desktopScale: 1.1,
             ),
             fontWeight: FontWeight.bold,
             color: AppColors.primaryColor,
@@ -479,10 +479,10 @@ class _AboutSectionState extends ConsumerState<AboutSection> {
           ),
           labelStyle: GoogleFonts.poppins(
             fontSize: Responsive.fontSize(context, 14,
-              mobileSmallScale: 0.85,   // 12px
-              mobileLargeScale: 0.95,   // 13px
-              tabletScale: 1.0,         // 14px
-              desktopScale: 1.1,        // 15px
+              mobileSmallScale: 0.85,
+              mobileLargeScale: 0.95,
+              tabletScale: 1.0,
+              desktopScale: 1.1,
             ),
             color: const Color(0xFF4A5568),
             fontWeight: FontWeight.w500,
@@ -543,7 +543,6 @@ class _FeatureCardState extends State<_FeatureCard> with SingleTickerProviderSta
 
   @override
   Widget build(BuildContext context) {
-    // Only enable hover effects on desktop/tablet (not mobile)
     final enableHover = !Responsive.isMobile(context);
 
     Widget cardContent = AnimatedBuilder(
@@ -552,7 +551,8 @@ class _FeatureCardState extends State<_FeatureCard> with SingleTickerProviderSta
         return Transform.scale(
           scale: enableHover ? _scaleAnimation.value : 1.0,
           child: Container(
-            height: double.infinity, // This ensures the card fills the available height
+            // Remove height: double.infinity - let content determine height
+            width: double.infinity,
             padding: EdgeInsets.symmetric(
               horizontal: Responsive.valueWhen(context,
                 mobile: 20,
@@ -565,7 +565,7 @@ class _FeatureCardState extends State<_FeatureCard> with SingleTickerProviderSta
                 mobile: 24,
                 mobileSmall: 20,
                 mobileLarge: 28,
-                tablet: 16,
+                tablet: 20,
                 desktop: 30,
               ),
             ),
@@ -582,10 +582,9 @@ class _FeatureCardState extends State<_FeatureCard> with SingleTickerProviderSta
               ],
             ),
             child: Column(
-              mainAxisAlignment: MainAxisAlignment.center, // Center content vertically
-              mainAxisSize: MainAxisSize.max, // Take up full height
+              // Remove mainAxisAlignment and mainAxisSize constraints
+              crossAxisAlignment: CrossAxisAlignment.center,
               children: [
-                // Icon with subtle animation
                 TweenAnimationBuilder<double>(
                   tween: Tween(begin: 0.0, end: _isHovered && enableHover ? 1.0 : 0.0),
                   duration: const Duration(milliseconds: 200),
@@ -619,50 +618,45 @@ class _FeatureCardState extends State<_FeatureCard> with SingleTickerProviderSta
                   },
                 ),
 
-                const Spacer(flex: 1), // Flexible spacing
+                SizedBox(height: Responsive.spacing(context, 16)),
 
-                // Title
                 Text(
                   widget.title,
                   style: GoogleFonts.poppins(
                     fontSize: Responsive.fontSize(context, 18,
-                      mobileSmallScale: 0.9,    // 16px
-                      mobileLargeScale: 1.0,    // 18px
-                      tabletScale: 0.9,         // 16px (smaller for tablet to fit better)
-                      desktopScale: 1.0,        // 18px
+                      mobileSmallScale: 0.9,
+                      mobileLargeScale: 1.0,
+                      tabletScale: 0.9,
+                      desktopScale: 1.0,
                     ),
                     fontWeight: FontWeight.w600,
                     color: const Color(0xFF2D3748),
                   ),
                   textAlign: TextAlign.center,
-                  maxLines: 2, // Limit to 2 lines
+                  maxLines: 2,
                   overflow: TextOverflow.ellipsis,
                 ),
 
-                const Spacer(flex: 1), // Flexible spacing
+                SizedBox(height: Responsive.spacing(context, 12)),
 
-                // Subtitle
-                Flexible(
-                  flex: 3, // Give more space to subtitle
-                  child: Text(
-                    widget.subtitle,
-                    style: GoogleFonts.poppins(
-                      fontSize: Responsive.fontSize(context, 15,
-                        mobileSmallScale: 0.85,   // 13px
-                        mobileLargeScale: 0.95,   // 14px
-                        tabletScale: 0.8,         // 12px (smaller for tablet)
-                        desktopScale: 1.0,        // 15px
-                      ),
-                      color: const Color(0xFF4A5568),
-                      height: 1.4,
+                Text(
+                  widget.subtitle,
+                  style: GoogleFonts.poppins(
+                    fontSize: Responsive.fontSize(context, 15,
+                      mobileSmallScale: 0.85,
+                      mobileLargeScale: 0.95,
+                      tabletScale: 0.8,
+                      desktopScale: 1.0,
                     ),
-                    textAlign: TextAlign.center,
-                    maxLines: 3, // Limit subtitle to 3 lines
-                    overflow: TextOverflow.ellipsis,
+                    color: const Color(0xFF4A5568),
+                    height: 1.4,
                   ),
+                  textAlign: TextAlign.center,
+                  maxLines: 4, // Allow more lines for mobile
+                  overflow: TextOverflow.ellipsis,
                 ),
 
-                const Spacer(flex: 1), // Bottom spacing
+                SizedBox(height: Responsive.spacing(context, 16)),
               ],
             ),
           ),
@@ -670,7 +664,6 @@ class _FeatureCardState extends State<_FeatureCard> with SingleTickerProviderSta
       },
     );
 
-    // Only wrap with MouseRegion if hover is supported
     if (enableHover) {
       return MouseRegion(
         onEnter: (_) {
