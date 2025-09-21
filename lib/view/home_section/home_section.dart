@@ -24,7 +24,6 @@ class _HomeSectionState extends ConsumerState<HomeSection>
     WidgetsBinding.instance.addPostFrameCallback((_) {
       final viewModel = ref.read(homeViewModelProvider.notifier);
       viewModel.initializeAnimations(this);
-      // Don't start animations here - wait for image to load
     });
   }
 
@@ -35,14 +34,12 @@ class _HomeSectionState extends ConsumerState<HomeSection>
     super.dispose();
   }
 
-  // Called when image loads successfully
   void _onImageLoaded() {
     if (!_imageLoaded) {
       setState(() {
         _imageLoaded = true;
       });
 
-      // Start animations only after image loads
       if (!_animationsStarted) {
         _animationsStarted = true;
         final viewModel = ref.read(homeViewModelProvider.notifier);
@@ -55,71 +52,91 @@ class _HomeSectionState extends ConsumerState<HomeSection>
 
   @override
   Widget build(BuildContext context) {
+    // Calculate optimal height based on device type
+    final screenHeight = MediaQuery.of(context).size.height;
+    final appBarHeight = AppBar().preferredSize.height;
+    final statusBarHeight = MediaQuery.of(context).padding.top;
+    final availableHeight = screenHeight - appBarHeight - statusBarHeight;
+
     return Container(
       width: double.infinity,
-      height: MediaQuery.of(context).size.height * 0.9,
-      decoration: const BoxDecoration(),
-      child: SingleChildScrollView(
-        child: ConstrainedBox(
-          constraints: BoxConstraints(
-            minHeight: MediaQuery.of(context).size.height * 0.86,
-          ),
-          child: Center(
-            child: Padding(
-              padding: EdgeInsets.symmetric(
-                horizontal: Responsive.valueWhen(context,
-                  mobile: 20,
-                  mobileSmall: 16,
-                  mobileLarge: 24,
-                  tablet: 40,
-                  tabletLarge: 60,
-                  desktop: 200,
-                ),
-                vertical: Responsive.valueWhen(context,
-                  mobile: 28,
-                  mobileSmall: 24,
-                  mobileLarge: 32,
-                  tablet: 20,
-                  tabletLarge: 24,
-                  desktop: 0,
-                ),
-              ),
-              child: Responsive.isDesktop(context)
-                  ? _buildDesktopLayout(context)
-                  : _buildMobileLayout(context),
-            ),
-          ),
+      // Use flexible height constraints instead of fixed height
+      constraints: BoxConstraints(
+        minHeight: Responsive.valueWhen(context,
+          mobile: availableHeight * 0.85,
+          mobileSmall: availableHeight * 0.8,
+          mobileLarge: availableHeight * 0.9,
+          tablet: availableHeight * 0.85,
+          tabletLarge: availableHeight * 0.9,
+          desktop: availableHeight * 0.9,
         ),
       ),
+      decoration: const BoxDecoration(
+        color: Color(0xFFF7FAFC),
+      ),
+      child: _buildResponsiveLayout(context),
+    );
+  }
+
+  Widget _buildResponsiveLayout(BuildContext context) {
+    return Padding(
+      padding: EdgeInsets.symmetric(
+        horizontal: Responsive.valueWhen(context,
+          mobile: 20,
+          mobileSmall: 16,
+          mobileLarge: 24,
+          tablet: 40,
+          tabletLarge: 60,
+          desktop: 200,
+        ),
+        vertical: Responsive.valueWhen(context,
+          mobile: 20,
+          mobileSmall: 16,
+          mobileLarge: 24,
+          tablet: 20,
+          tabletLarge: 24,
+          desktop: 40,
+        ),
+      ),
+      child: Responsive.isDesktop(context)
+          ? _buildDesktopLayout(context)
+          : _buildMobileLayout(context),
     );
   }
 
   Widget _buildDesktopLayout(BuildContext context) {
-    return Row(
-      children: [
-        Expanded(
-          flex: 5,
-          child: _buildLeftContent(context),
-        ),
-        SizedBox(width: Responsive.valueWhen(context,
-          tablet: 40,
-          tabletLarge: 60,
-          desktop: 80, mobile: 20,
-        )),
-        Expanded(
-          flex: 6,
-          child: _buildRightImage(context),
-        ),
-      ],
+    return Center(
+      child: Row(
+        crossAxisAlignment: CrossAxisAlignment.center,
+        children: [
+          Expanded(
+            flex: 5,
+            child: _buildLeftContent(context),
+          ),
+          SizedBox(width: Responsive.valueWhen(context,
+            tablet: 40,
+            tabletLarge: 60,
+            desktop: 80,
+            mobile: 20,
+          )),
+          Expanded(
+            flex: 6,
+            child: _buildRightImage(context),
+          ),
+        ],
+      ),
     );
   }
 
   Widget _buildMobileLayout(BuildContext context) {
     return Column(
+      crossAxisAlignment: CrossAxisAlignment.center,
       children: [
         _buildRightImage(context),
-        SizedBox(height: Responsive.spacing(context, 68)),
+        SizedBox(height: Responsive.spacing(context, 40)),
         _buildLeftContent(context),
+        // Add some bottom spacing for mobile
+        SizedBox(height: Responsive.spacing(context, 40)),
       ],
     );
   }
@@ -128,9 +145,11 @@ class _HomeSectionState extends ConsumerState<HomeSection>
     final animationState = ref.watch(homeViewModelProvider);
 
     return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
+      crossAxisAlignment: Responsive.isDesktop(context)
+          ? CrossAxisAlignment.start
+          : CrossAxisAlignment.center,
       children: [
-        // Main Heading - Optimized Animation
+        // Main Heading
         OptimizedAnimatedWidget(
           opacity: animationState.headingOpacity,
           slideX: animationState.headingSlide,
@@ -139,7 +158,7 @@ class _HomeSectionState extends ConsumerState<HomeSection>
 
         SizedBox(height: Responsive.spacing(context, 16)),
 
-        // Description - Optimized Animation
+        // Description
         OptimizedAnimatedWidget(
           opacity: animationState.descriptionOpacity,
           slideX: animationState.descriptionSlide,
@@ -148,7 +167,7 @@ class _HomeSectionState extends ConsumerState<HomeSection>
 
         SizedBox(height: Responsive.spacing(context, 30)),
 
-        // Buttons - Optimized Animation
+        // Buttons
         OptimizedAnimatedWidget(
           opacity: animationState.buttonsOpacity,
           slideX: animationState.buttonsSlide,
@@ -157,7 +176,7 @@ class _HomeSectionState extends ConsumerState<HomeSection>
 
         SizedBox(height: Responsive.spacing(context, 50)),
 
-        // Feature Highlights - Optimized Animation
+        // Feature Highlights
         OptimizedAnimatedWidget(
           opacity: animationState.featuresOpacity,
           slideX: animationState.featuresSlide,
@@ -169,6 +188,9 @@ class _HomeSectionState extends ConsumerState<HomeSection>
 
   Widget _buildMainHeading(BuildContext context) {
     return RichText(
+      textAlign: Responsive.isDesktop(context)
+          ? TextAlign.left
+          : TextAlign.center,
       text: TextSpan(
         children: Responsive.isTablet(context) || Responsive.isTabletLarge(context) ? [
           TextSpan(
@@ -183,7 +205,7 @@ class _HomeSectionState extends ConsumerState<HomeSection>
               ),
               fontWeight: FontWeight.bold,
               color: Colors.black,
-              height: 0.3,
+              height: 1.2,
             ),
           ),
           TextSpan(
@@ -213,7 +235,7 @@ class _HomeSectionState extends ConsumerState<HomeSection>
               ),
               fontWeight: FontWeight.bold,
               color: Colors.black,
-              height: 0.3,
+              height: 1.2,
             ),
           ),
           TextSpan(
@@ -238,6 +260,9 @@ class _HomeSectionState extends ConsumerState<HomeSection>
   Widget _buildDescription(BuildContext context) {
     return Text(
       'Experience exceptional dental care with our team of expert dentists. We provide comprehensive, gentle, and personalized treatment in a modern, comfortable environment.',
+      textAlign: Responsive.isDesktop(context)
+          ? TextAlign.left
+          : TextAlign.center,
       style: Theme.of(context).textTheme.bodyLarge?.copyWith(
         fontSize: Responsive.fontSize(context, 18,
           mobileSmallScale: 0.85,
@@ -246,12 +271,17 @@ class _HomeSectionState extends ConsumerState<HomeSection>
           tabletLargeScale: 0.98,
           desktopScale: 1.0,
         ),
+        color: const Color(0xFF4A5568),
+        height: 1.6,
       ),
     );
   }
 
   Widget _buildButtons(BuildContext context) {
     return Wrap(
+      alignment: Responsive.isDesktop(context)
+          ? WrapAlignment.start
+          : WrapAlignment.center,
       spacing: Responsive.spacing(context, 16),
       runSpacing: Responsive.spacing(context, 16),
       children: [
@@ -324,6 +354,7 @@ class _HomeSectionState extends ConsumerState<HomeSection>
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(12),
           ),
+          elevation: 0,
         ),
       ),
     );
@@ -375,6 +406,9 @@ class _HomeSectionState extends ConsumerState<HomeSection>
 
   Widget _buildFeatureHighlights(BuildContext context) {
     return Row(
+      mainAxisAlignment: Responsive.isDesktop(context)
+          ? MainAxisAlignment.start
+          : MainAxisAlignment.center,
       children: [
         _buildFeatureItem(
           Icons.shield_outlined,
@@ -407,7 +441,9 @@ class _HomeSectionState extends ConsumerState<HomeSection>
       BuildContext context,
       ) {
     return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
+      crossAxisAlignment: Responsive.isDesktop(context)
+          ? CrossAxisAlignment.start
+          : CrossAxisAlignment.center,
       children: [
         Container(
           padding: EdgeInsets.all(Responsive.valueWhen(context,
@@ -429,15 +465,18 @@ class _HomeSectionState extends ConsumerState<HomeSection>
               mobile: 18,
               mobileSmall: 16,
               mobileLarge: 20,
-              tablet: 33,
-              tabletLarge: 34,
+              tablet: 22,
+              tabletLarge: 24,
               desktop: 24,
             ),
           ),
         ),
-        SizedBox(height: Responsive.spacing(context, 16)),
+        SizedBox(height: Responsive.spacing(context, 12)),
         Text(
           title,
+          textAlign: Responsive.isDesktop(context)
+              ? TextAlign.left
+              : TextAlign.center,
           style: TextStyle(
             fontSize: Responsive.fontSize(context, 18,
               mobileSmallScale: 0.85,
@@ -453,6 +492,9 @@ class _HomeSectionState extends ConsumerState<HomeSection>
         SizedBox(height: Responsive.spacing(context, 4)),
         Text(
           subtitle,
+          textAlign: Responsive.isDesktop(context)
+              ? TextAlign.left
+              : TextAlign.center,
           style: TextStyle(
             fontSize: Responsive.fontSize(context, 14,
               mobileSmallScale: 0.85,
@@ -472,12 +514,10 @@ class _HomeSectionState extends ConsumerState<HomeSection>
   Widget _buildRightImage(BuildContext context) {
     final animationState = ref.watch(homeViewModelProvider);
 
-    final imageStack = _buildImageStack(context);
-
     return OptimizedAnimatedWidget(
       opacity: animationState.imageOpacity,
       slideX: animationState.imageSlide,
-      child: imageStack,
+      child: _buildImageStack(context),
     );
   }
 
@@ -487,11 +527,11 @@ class _HomeSectionState extends ConsumerState<HomeSection>
       children: [
         Container(
           height: Responsive.valueWhen(context,
-            mobile: 350,
-            mobileSmall: 300,
-            mobileLarge: 380,
-            tablet: 510,
-            tabletLarge: 560,
+            mobile: 300,
+            mobileSmall: 280,
+            mobileLarge: 320,
+            tablet: 450,
+            tabletLarge: 500,
             desktop: 600,
           ),
           decoration: BoxDecoration(
@@ -506,112 +546,67 @@ class _HomeSectionState extends ConsumerState<HomeSection>
           ),
           child: ClipRRect(
             borderRadius: BorderRadius.circular(20),
-            child: Container(
-              color: AppColors.whiteColor,
-              child: _imageLoaded
-                  ? Image.asset(
-                'assets/images/home_section_image.jpg',
-                fit: BoxFit.cover,
-                frameBuilder: (context, child, frame, wasSynchronouslyLoaded) {
-                  // Called when image loads successfully
-                  if (frame != null && !wasSynchronouslyLoaded) {
-                    // Image loaded asynchronously - trigger animations
-                    WidgetsBinding.instance.addPostFrameCallback((_) {
-                      _onImageLoaded();
-                    });
-                  } else if (wasSynchronouslyLoaded) {
-                    // Image loaded from cache - trigger animations immediately
-                    WidgetsBinding.instance.addPostFrameCallback((_) {
-                      _onImageLoaded();
-                    });
-                  }
-                  return child;
-                },
-                errorBuilder: (context, error, stackTrace) {
-                  // Fallback for missing image - show placeholder but don't trigger animations
-                  return Container(
-                    color: const Color(0xFFF0F8FF),
-                    child: const Center(
-                      child: Column(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: [
-                          Icon(
-                            Icons.image_not_supported,
-                            size: 60,
+            child: Image.asset(
+              'assets/images/home_section_image.jpg',
+              fit: BoxFit.cover,
+              frameBuilder: (context, child, frame, wasSynchronouslyLoaded) {
+                if (frame != null) {
+                  WidgetsBinding.instance.addPostFrameCallback((_) {
+                    _onImageLoaded();
+                  });
+                }
+                return child;
+              },
+              errorBuilder: (context, error, stackTrace) {
+                // Trigger animations even if image fails to load
+                WidgetsBinding.instance.addPostFrameCallback((_) {
+                  _onImageLoaded();
+                });
+                return Container(
+                  color: const Color(0xFFF0F8FF),
+                  child: const Center(
+                    child: Column(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        Icon(
+                          Icons.image_not_supported,
+                          size: 60,
+                          color: Colors.grey,
+                        ),
+                        SizedBox(height: 16),
+                        Text(
+                          'Image not available',
+                          style: TextStyle(
                             color: Colors.grey,
+                            fontSize: 16,
                           ),
-                          SizedBox(height: 16),
-                          Text(
-                            'Image not available',
-                            style: TextStyle(
-                              color: Colors.grey,
-                              fontSize: 16,
-                            ),
-                          ),
-                        ],
-                      ),
+                        ),
+                      ],
                     ),
-                  );
-                },
-              )
-                  : Image.asset(
-                'assets/images/home_section_image.jpg',
-                fit: BoxFit.cover,
-                frameBuilder: (context, child, frame, wasSynchronouslyLoaded) {
-                  // Called when image loads successfully
-                  if (frame != null) {
-                    WidgetsBinding.instance.addPostFrameCallback((_) {
-                      _onImageLoaded();
-                    });
-                  }
-                  return child;
-                },
-                errorBuilder: (context, error, stackTrace) {
-                  // Show loading placeholder while trying to load
-                  return Container(
-                    color: const Color(0xFFF0F8FF),
-                    child: const Center(
-                      child: Column(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: [
-                          CircularProgressIndicator(
-                            color: AppColors.primaryColor,
-                          ),
-                          SizedBox(height: 16),
-                          Text(
-                            'Loading image...',
-                            style: TextStyle(
-                              color: Colors.grey,
-                              fontSize: 16,
-                            ),
-                          ),
-                        ],
-                      ),
-                    ),
-                  );
-                },
-              ),
+                  ),
+                );
+              },
             ),
           ),
         ),
 
-        // Only show info cards after image loads to prevent layout shift
+        // Info cards - only show after image loads to prevent layout shift
         if (_imageLoaded) ...[
           Positioned(
             top: Responsive.valueWhen(context,
-              mobile: -10,
-              mobileSmall: -8,
-              mobileLarge: -12,
-              tablet: -15,
-              tabletLarge: -18,
+              mobile: -8,
+              mobileSmall: -6,
+              mobileLarge: -10,
+              tablet: -12,
+              tabletLarge: -15,
               desktop: -20,
             ),
             right: Responsive.valueWhen(context,
-              mobile: -10,
-              mobileSmall: -8,
-              mobileLarge: -12,
-              tablet: -15,
-              tabletLarge: -18,
+              mobile: -8,
+              mobileSmall: -6,
+              mobileLarge: -10,
+              tablet: -12,
+              tabletLarge: -15,
               desktop: -20,
             ),
             child: _buildInfoCard(
@@ -619,25 +614,24 @@ class _HomeSectionState extends ConsumerState<HomeSection>
               '5000+',
               'Happy Patients',
               const Color(0xFF10B981),
-              true,
             ),
           ),
 
           Positioned(
             bottom: Responsive.valueWhen(context,
-              mobile: -16,
-              mobileSmall: -14,
-              mobileLarge: -18,
-              tablet: -18,
-              tabletLarge: -19,
+              mobile: -12,
+              mobileSmall: -10,
+              mobileLarge: -14,
+              tablet: -15,
+              tabletLarge: -17,
               desktop: -20,
             ),
             left: Responsive.valueWhen(context,
-              mobile: -14,
-              mobileSmall: -12,
-              mobileLarge: -16,
-              tablet: -17,
-              tabletLarge: -18,
+              mobile: -10,
+              mobileSmall: -8,
+              mobileLarge: -12,
+              tablet: -12,
+              tabletLarge: -15,
               desktop: -20,
             ),
             child: _buildInfoCard(
@@ -645,7 +639,6 @@ class _HomeSectionState extends ConsumerState<HomeSection>
               '10+',
               'Years Experience',
               AppColors.primaryColor,
-              false,
             ),
           ),
         ],
@@ -658,14 +651,13 @@ class _HomeSectionState extends ConsumerState<HomeSection>
       String number,
       String text,
       Color color,
-      bool isTopCard,
       ) {
     return Container(
       padding: EdgeInsets.all(Responsive.valueWhen(context,
-        mobile: 12,
-        mobileSmall: 10,
-        mobileLarge: 14,
-        tablet: 15,
+        mobile: 10,
+        mobileSmall: 8,
+        mobileLarge: 12,
+        tablet: 14,
         tabletLarge: 16,
         desktop: 18,
       )),
@@ -674,10 +666,10 @@ class _HomeSectionState extends ConsumerState<HomeSection>
         borderRadius: BorderRadius.circular(16),
         boxShadow: [
           BoxShadow(
-            color: Colors.grey.shade400,
-            blurRadius: 14,
-            spreadRadius: 2,
-            offset: const Offset(0, 0),
+            color: Colors.grey.withOpacity(0.2),
+            blurRadius: 10,
+            spreadRadius: 1,
+            offset: const Offset(0, 2),
           ),
         ],
       ),
@@ -688,7 +680,7 @@ class _HomeSectionState extends ConsumerState<HomeSection>
           Text(
             number,
             style: TextStyle(
-              fontSize: Responsive.fontSize(context, 32,
+              fontSize: Responsive.fontSize(context, 28,
                 mobileSmallScale: 0.75,
                 mobileLargeScale: 0.85,
                 tabletScale: 0.9,
@@ -697,14 +689,14 @@ class _HomeSectionState extends ConsumerState<HomeSection>
               ),
               fontWeight: FontWeight.bold,
               color: color,
-              height: 1,
+              height: 1.1,
             ),
           ),
           SizedBox(height: Responsive.spacing(context, 4)),
           Text(
             text,
             style: TextStyle(
-              fontSize: Responsive.fontSize(context, 14,
+              fontSize: Responsive.fontSize(context, 13,
                 mobileSmallScale: 0.8,
                 mobileLargeScale: 0.9,
                 tabletScale: 0.95,
@@ -716,6 +708,33 @@ class _HomeSectionState extends ConsumerState<HomeSection>
             ),
           ),
         ],
+      ),
+    );
+  }
+}
+
+// Optimized Animation Widget
+class OptimizedAnimatedWidget extends StatelessWidget {
+  final double opacity;
+  final double slideX;
+  final Widget child;
+
+  const OptimizedAnimatedWidget({
+    super.key,
+    required this.opacity,
+    required this.slideX,
+    required this.child,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return AnimatedOpacity(
+      opacity: opacity,
+      duration: const Duration(milliseconds: 800),
+      curve: Curves.easeOutQuart,
+      child: Transform.translate(
+        offset: Offset(slideX, 0),
+        child: child,
       ),
     );
   }
