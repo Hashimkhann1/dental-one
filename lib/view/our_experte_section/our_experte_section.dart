@@ -1,8 +1,10 @@
+import 'package:dental_one/l10n/app_localizations.dart';
 import 'package:dental_one/view_model/our_expert_view_model/our_expert_view_model.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:dental_one/res/responsive/responsive.dart';
+
 
 class OurExpertSection extends ConsumerStatefulWidget {
   const OurExpertSection({super.key});
@@ -50,6 +52,7 @@ class _OurExpertSectionState extends ConsumerState<OurExpertSection> {
   @override
   Widget build(BuildContext context) {
     final animationState = ref.watch(ourExpertAnimationProvider);
+    final l10n = AppLocalizations.of(context)!;
 
     return Container(
       width: double.infinity,
@@ -75,7 +78,7 @@ class _OurExpertSectionState extends ConsumerState<OurExpertSection> {
       child: Column(
         children: [
           // Header Section with Animation
-          _buildAnimatedHeaderSection(context, animationState.isHeaderVisible),
+          _buildAnimatedHeaderSection(context, animationState.isHeaderVisible, l10n),
 
           SizedBox(height: Responsive.spacing(context, 60,
             mobileSmallMultiplier: 0.7,
@@ -86,7 +89,7 @@ class _OurExpertSectionState extends ConsumerState<OurExpertSection> {
           )),
 
           // Team Members Section with Animation
-          _buildAnimatedTeamMembersSection(context, animationState),
+          _buildAnimatedTeamMembersSection(context, animationState, l10n),
 
           SizedBox(height: Responsive.spacing(context, 70,
             mobileSmallMultiplier: 0.85,
@@ -97,13 +100,13 @@ class _OurExpertSectionState extends ConsumerState<OurExpertSection> {
           )),
 
           // Why Choose Our Team Section with Animation
-          _buildAnimatedWhyChooseSection(context, animationState),
+          _buildAnimatedWhyChooseSection(context, animationState, l10n),
         ],
       ),
     );
   }
 
-  Widget _buildAnimatedHeaderSection(BuildContext context, bool isVisible) {
+  Widget _buildAnimatedHeaderSection(BuildContext context, bool isVisible, AppLocalizations l10n) {
     return AnimatedOpacity(
       opacity: isVisible ? 1.0 : 0.0,
       duration: const Duration(milliseconds: 600),
@@ -114,7 +117,7 @@ class _OurExpertSectionState extends ConsumerState<OurExpertSection> {
         child: Column(
           children: [
             Text(
-              'Meet Our Expert Team',
+              l10n.expertTeamTitle,
               style: GoogleFonts.poppins(
                 fontSize: Responsive.fontSize(context, 40,
                   mobileSmallScale: 0.8,    // 32px
@@ -134,7 +137,7 @@ class _OurExpertSectionState extends ConsumerState<OurExpertSection> {
             Container(
               constraints: const BoxConstraints(maxWidth: 800),
               child: Text(
-                'Our team of experienced dental professionals is dedicated to providing you with the highest quality care. Each member brings unique expertise and a shared commitment to your oral health and comfort.',
+                l10n.expertTeamDescription,
                 style: GoogleFonts.inter(
                   fontSize: Responsive.fontSize(context, 18,
                     mobileSmallScale: 0.85,   // 15px
@@ -155,34 +158,34 @@ class _OurExpertSectionState extends ConsumerState<OurExpertSection> {
     );
   }
 
-  Widget _buildAnimatedTeamMembersSection(BuildContext context, OurExpertAnimationState animationState) {
+  Widget _buildAnimatedTeamMembersSection(BuildContext context, OurExpertAnimationState animationState, AppLocalizations l10n) {
     final teamMembers = [
       {
-        'name': 'Dr. Sarah Johnson',
-        'role': 'Lead Dentist & Clinic Director',
-        'experience': '15+ years',
+        'name': l10n.drSarahJohnson,
+        'role': l10n.drSarahRole,
+        'experience': l10n.drSarahExperience,
         'image': 'https://images.unsplash.com/photo-1559839734-2b71ea197ec2?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=2340&q=80',
-        'description': 'Dr. Johnson is passionate about creating healthy, beautiful smiles with advanced dental care.',
-        'education': 'DDS, Harvard School of Dental Medicine',
-        'expertise': ['General Dentistry', 'Cosmetic Procedures'],
+        'description': l10n.drSarahDescription,
+        'education': l10n.drSarahEducation,
+        'expertise': [l10n.drSarahExpertise1, l10n.drSarahExpertise2],
       },
       {
-        'name': 'Dr. Michael Chen',
-        'role': 'Orthodontist & Oral Surgeon',
-        'experience': '12+ years',
+        'name': l10n.drMichaelChen,
+        'role': l10n.drMichaelRole,
+        'experience': l10n.drMichaelExperience,
         'image': 'https://images.unsplash.com/photo-1612349317150-e413f6a5b16d?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=2340&q=80',
-        'description': 'Specializing in orthodontics and oral surgery, Dr. Chen combines precision with patient comfort in every procedure.',
-        'education': 'DDS, University of Pennsylvania',
-        'expertise': ['Orthodontics', 'Oral Surgery', 'Implant Dentistry'],
+        'description': l10n.drMichaelDescription,
+        'education': l10n.drMichaelEducation,
+        'expertise': [l10n.drMichaelExpertise1, l10n.drMichaelExpertise2, l10n.drMichaelExpertise3],
       },
       {
-        'name': 'Dr. Emily Rodriguez',
-        'role': 'Pediatric Dentist',
-        'experience': '8+ years',
+        'name': l10n.drEmilyRodriguez,
+        'role': l10n.drEmilyRole,
+        'experience': l10n.drEmilyExperience,
         'image': 'https://images.unsplash.com/photo-1612349317150-e413f6a5b16d?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=2340&q=80',
-        'description': 'Dr. Rodriguez creates a fun, comfortable environment for children while providing exceptional pediatric dental care.',
-        'education': 'DDS, UCLA School of Dentistry',
-        'expertise': ['Pediatric Dentistry', 'Preventive Care'],
+        'description': l10n.drEmilyDescription,
+        'education': l10n.drEmilyEducation,
+        'expertise': [l10n.drEmilyExpertise1, l10n.drEmilyExpertise2],
       },
     ];
 
@@ -244,7 +247,7 @@ class _OurExpertSectionState extends ConsumerState<OurExpertSection> {
     );
   }
 
-  Widget _buildAnimatedWhyChooseSection(BuildContext context, OurExpertAnimationState animationState) {
+  Widget _buildAnimatedWhyChooseSection(BuildContext context, OurExpertAnimationState animationState, AppLocalizations l10n) {
     return AnimatedOpacity(
       opacity: animationState.isWhyChooseSectionVisible ? 1.0 : 0.0,
       duration: const Duration(milliseconds: 600),
@@ -269,7 +272,7 @@ class _OurExpertSectionState extends ConsumerState<OurExpertSection> {
           child: Column(
             children: [
               Text(
-                'Why Choose Our Team?',
+                l10n.whyChooseTeamTitle,
                 style: GoogleFonts.poppins(
                   fontSize: Responsive.fontSize(context, 30,
                     mobileSmallScale: 0.8,    // 24px
@@ -292,7 +295,7 @@ class _OurExpertSectionState extends ConsumerState<OurExpertSection> {
                 desktopMultiplier: 1.1,
               )),
 
-              _buildAnimatedWhyChooseFeatures(context, animationState),
+              _buildAnimatedWhyChooseFeatures(context, animationState, l10n),
             ],
           ),
         ),
@@ -300,22 +303,22 @@ class _OurExpertSectionState extends ConsumerState<OurExpertSection> {
     );
   }
 
-  Widget _buildAnimatedWhyChooseFeatures(BuildContext context, OurExpertAnimationState animationState) {
+  Widget _buildAnimatedWhyChooseFeatures(BuildContext context, OurExpertAnimationState animationState, AppLocalizations l10n) {
     final features = [
       {
         'icon': Icons.verified_outlined,
-        'title': 'Board Certified',
-        'description': 'All our dentists are board certified and maintain continuing education',
+        'title': l10n.whyChooseBoardCertifiedTitle,
+        'description': l10n.whyChooseBoardCertifiedDescription,
       },
       {
         'icon': Icons.school_outlined,
-        'title': 'Extensive Training',
-        'description': 'Graduates from top dental schools with specialized training',
+        'title': l10n.whyChooseTrainingTitle,
+        'description': l10n.whyChooseTrainingDescription,
       },
       {
         'icon': Icons.location_on_outlined,
-        'title': 'Local Expertise',
-        'description': 'Deep understanding of community dental health needs',
+        'title': l10n.whyChooseLocalTitle,
+        'description': l10n.whyChooseLocalDescription,
       },
     ];
 

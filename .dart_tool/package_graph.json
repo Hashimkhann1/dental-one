@@ -7,8 +7,11 @@
       "name": "dental_one",
       "version": "1.0.0+1",
       "dependencies": [
+        "cloud_functions",
         "cupertino_icons",
+        "firebase_core",
         "flutter",
+        "flutter_localizations",
         "flutter_riverpod",
         "google_fonts",
         "google_maps_flutter",
@@ -52,6 +55,42 @@
         "test_api",
         "vector_math",
         "vm_service"
+      ]
+    },
+    {
+      "name": "flutter_localizations",
+      "version": "0.0.0",
+      "dependencies": [
+        "characters",
+        "clock",
+        "collection",
+        "flutter",
+        "intl",
+        "material_color_utilities",
+        "meta",
+        "path",
+        "vector_math"
+      ]
+    },
+    {
+      "name": "cloud_functions",
+      "version": "6.0.1",
+      "dependencies": [
+        "cloud_functions_platform_interface",
+        "cloud_functions_web",
+        "firebase_core",
+        "firebase_core_platform_interface",
+        "flutter"
+      ]
+    },
+    {
+      "name": "firebase_core",
+      "version": "4.1.0",
+      "dependencies": [
+        "firebase_core_platform_interface",
+        "firebase_core_web",
+        "flutter",
+        "meta"
       ]
     },
     {
@@ -282,6 +321,59 @@
       ]
     },
     {
+      "name": "intl",
+      "version": "0.20.2",
+      "dependencies": [
+        "clock",
+        "meta",
+        "path"
+      ]
+    },
+    {
+      "name": "firebase_core_platform_interface",
+      "version": "6.0.0",
+      "dependencies": [
+        "collection",
+        "flutter",
+        "flutter_test",
+        "meta",
+        "plugin_platform_interface"
+      ]
+    },
+    {
+      "name": "cloud_functions_web",
+      "version": "5.0.1",
+      "dependencies": [
+        "cloud_functions_platform_interface",
+        "firebase_core",
+        "firebase_core_web",
+        "flutter",
+        "flutter_web_plugins",
+        "web"
+      ]
+    },
+    {
+      "name": "cloud_functions_platform_interface",
+      "version": "5.8.4",
+      "dependencies": [
+        "firebase_core",
+        "flutter",
+        "meta",
+        "plugin_platform_interface"
+      ]
+    },
+    {
+      "name": "firebase_core_web",
+      "version": "3.1.0",
+      "dependencies": [
+        "firebase_core_platform_interface",
+        "flutter",
+        "flutter_web_plugins",
+        "meta",
+        "web"
+      ]
+    },
+    {
       "name": "url_launcher_windows",
       "version": "3.1.4",
       "dependencies": [
@@ -436,6 +528,13 @@
       "dependencies": []
     },
     {
+      "name": "plugin_platform_interface",
+      "version": "2.1.8",
+      "dependencies": [
+        "meta"
+      ]
+    },
+    {
       "name": "web",
       "version": "1.1.1",
       "dependencies": []
@@ -450,13 +549,6 @@
         "material_color_utilities",
         "meta",
         "vector_math"
-      ]
-    },
-    {
-      "name": "plugin_platform_interface",
-      "version": "2.1.8",
-      "dependencies": [
-        "meta"
       ]
     },
     {

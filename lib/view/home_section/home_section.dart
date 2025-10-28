@@ -1,3 +1,4 @@
+import 'package:dental_one/l10n/app_localizations.dart';
 import 'package:dental_one/res/app_colors/app_colors.dart';
 import 'package:dental_one/res/responsive/responsive.dart';
 import 'package:dental_one/view_model/home_view_model/home_view_model.dart';
@@ -87,7 +88,7 @@ class _HomeSectionState extends ConsumerState<HomeSection>
           mobileLarge: 24,
           tablet: 40,
           tabletLarge: 60,
-          desktop: 200,
+          desktop: MediaQuery.of(context).size.width < 1378 ? MediaQuery.of(context).size.width * 0.03 : MediaQuery.of(context).size.width * 0.08,
         ),
         vertical: Responsive.valueWhen(context,
           mobile: 20,
@@ -194,7 +195,7 @@ class _HomeSectionState extends ConsumerState<HomeSection>
       text: TextSpan(
         children: Responsive.isTablet(context) || Responsive.isTabletLarge(context) ? [
           TextSpan(
-            text: 'Your Smile is Our ',
+            text: AppLocalizations.of(context)!.homeHeadingSmile.toString(),
             style: GoogleFonts.poppins(
               fontSize: Responsive.fontSize(context, 54,
                 mobileSmallScale: 0.6,
@@ -209,7 +210,7 @@ class _HomeSectionState extends ConsumerState<HomeSection>
             ),
           ),
           TextSpan(
-            text: 'Priority',
+            text: AppLocalizations.of(context)!.homeHeadingPriority.toString(),
             style: GoogleFonts.poppins(
               fontSize: Responsive.fontSize(context, 50,
                 mobileSmallScale: 0.6,
@@ -224,7 +225,7 @@ class _HomeSectionState extends ConsumerState<HomeSection>
           ),
         ] : [
           TextSpan(
-            text: 'Your Smile is Our\n',
+            text: '${AppLocalizations.of(context)!.homeHeadingSmile.toString()}\n',
             style: GoogleFonts.poppins(
               fontSize: Responsive.fontSize(context, 54,
                 mobileSmallScale: 0.6,
@@ -239,7 +240,7 @@ class _HomeSectionState extends ConsumerState<HomeSection>
             ),
           ),
           TextSpan(
-            text: 'Priority',
+            text: AppLocalizations.of(context)!.homeHeadingPriority.toString(),
             style: GoogleFonts.poppins(
               fontSize: Responsive.fontSize(context, 50,
                 mobileSmallScale: 0.6,
@@ -259,7 +260,7 @@ class _HomeSectionState extends ConsumerState<HomeSection>
 
   Widget _buildDescription(BuildContext context) {
     return Text(
-      'Experience exceptional dental care with our team of expert dentists. We provide comprehensive, gentle, and personalized treatment in a modern, comfortable environment.',
+        AppLocalizations.of(context)!.homeParagraph.toString(),
       textAlign: Responsive.isDesktop(context)
           ? TextAlign.left
           : TextAlign.center,
@@ -318,7 +319,7 @@ class _HomeSectionState extends ConsumerState<HomeSection>
           color: AppColors.whiteColor,
         ),
         label: Text(
-          'Book Appointment',
+          AppLocalizations.of(context)!.bookAppointment.toString(),
           style: TextStyle(
             fontSize: Responsive.fontSize(context, 16,
               mobileSmallScale: 0.9,
@@ -388,7 +389,7 @@ class _HomeSectionState extends ConsumerState<HomeSection>
         ),
       ),
       child: Text(
-        'View Services',
+        AppLocalizations.of(context)!.services.toString(),
         style: TextStyle(
           fontSize: Responsive.fontSize(context, 16,
             mobileSmallScale: 0.9,
@@ -412,8 +413,8 @@ class _HomeSectionState extends ConsumerState<HomeSection>
       children: [
         _buildFeatureItem(
           Icons.shield_outlined,
-          'Safe Care',
-          'Latest\nprotocols',
+          AppLocalizations.of(context)!.safeCare.toString(),
+          AppLocalizations.of(context)!.latestProtocols.toString(),
           context,
         ),
         SizedBox(width: Responsive.valueWhen(context,
@@ -426,8 +427,8 @@ class _HomeSectionState extends ConsumerState<HomeSection>
         )),
         _buildFeatureItem(
           Icons.people_outline,
-          'Expert Team',
-          'Certified\nprofessionals',
+          AppLocalizations.of(context)!.expertTeam.toString(),
+          AppLocalizations.of(context)!.certifiedProfessionals.toString(),
           context,
         ),
       ],
@@ -611,8 +612,8 @@ class _HomeSectionState extends ConsumerState<HomeSection>
             ),
             child: _buildInfoCard(
               context,
-              '5000+',
-              'Happy Patients',
+              AppLocalizations.of(context)!.fivek,
+              AppLocalizations.of(context)!.happyPatients,
               const Color(0xFF10B981),
             ),
           ),
@@ -636,8 +637,8 @@ class _HomeSectionState extends ConsumerState<HomeSection>
             ),
             child: _buildInfoCard(
               context,
-              '10+',
-              'Years Experience',
+              AppLocalizations.of(context)!.thenPlus,
+              AppLocalizations.of(context)!.yearExperience,
               AppColors.primaryColor,
             ),
           ),

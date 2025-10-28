@@ -1,3 +1,4 @@
+import 'package:dental_one/l10n/app_localizations.dart';
 import 'package:dental_one/res/app_colors/app_colors.dart';
 import 'package:dental_one/res/responsive/responsive.dart';
 import 'package:dental_one/view_model/about_view_model/about_view_model.dart';
@@ -19,7 +20,6 @@ class _AboutSectionState extends ConsumerState<AboutSection> {
   @override
   void initState() {
     super.initState();
-    // Defer scroll listener setup
     WidgetsBinding.instance.addPostFrameCallback((_) {
       _setupScrollListener();
     });
@@ -38,9 +38,7 @@ class _AboutSectionState extends ConsumerState<AboutSection> {
         _scrollController = scrollableState.widget.controller;
         _scrollController?.addListener(_onScroll);
       }
-    } catch (e) {
-      // Silently handle any setup errors
-    }
+    } catch (e) {}
   }
 
   void _onScroll() {
@@ -65,9 +63,7 @@ class _AboutSectionState extends ConsumerState<AboutSection> {
           _triggerAnimations();
         }
       }
-    } catch (e) {
-      // Handle any scroll calculation errors
-    }
+    } catch (e) {}
   }
 
   void _triggerAnimations() {
@@ -75,8 +71,6 @@ class _AboutSectionState extends ConsumerState<AboutSection> {
       setState(() {
         _hasAnimated = true;
       });
-
-      // Use addPostFrameCallback to avoid triggering during build
       WidgetsBinding.instance.addPostFrameCallback((_) {
         if (mounted) {
           ref.read(aboutAnimationProvider.notifier).triggerAnimations();
@@ -88,19 +82,24 @@ class _AboutSectionState extends ConsumerState<AboutSection> {
   @override
   Widget build(BuildContext context) {
     final animationState = ref.watch(aboutAnimationProvider);
+    final loc = AppLocalizations.of(context)!;
 
     return Container(
       width: double.infinity,
       color: AppColors.whiteColor,
       padding: EdgeInsets.symmetric(
-        horizontal: Responsive.valueWhen(context,
+        horizontal: Responsive.valueWhen(
+          context,
           mobile: 20,
           mobileSmall: 16,
           mobileLarge: 24,
           tablet: 40,
-          desktop: MediaQuery.of(context).size.width * 0.11,
+          desktop: MediaQuery.of(context).size.width < 1440
+              ? MediaQuery.of(context).size.width * 0.03
+              : MediaQuery.of(context).size.width * 0.11,
         ),
-        vertical: Responsive.valueWhen(context,
+        vertical: Responsive.valueWhen(
+          context,
           mobile: 60,
           mobileSmall: 50,
           mobileLarge: 60,
@@ -110,31 +109,30 @@ class _AboutSectionState extends ConsumerState<AboutSection> {
       ),
       child: Column(
         children: [
-          _buildTopSection(context, animationState),
+          _buildTopSection(context, animationState, loc),
           SizedBox(height: Responsive.spacing(context, 60)),
-          _buildFeaturesSection(context, animationState),
+          _buildFeaturesSection(context, animationState, loc),
           SizedBox(height: Responsive.spacing(context, 60)),
-          _buildMissionSection(context, animationState),
+          _buildMissionSection(context, animationState, loc),
         ],
       ),
     );
   }
 
-  Widget _buildTopSection(BuildContext context, AboutAnimationState animationState) {
+  Widget _buildTopSection(BuildContext context, AboutAnimationState animationState, AppLocalizations loc) {
     return Column(
       children: [
         FadeInSlideUp(
           isVisible: animationState.isTitleVisible,
           duration: const Duration(milliseconds: 800),
           child: Text(
-            'About DentalCare Clinic',
+            loc.aboutTitle,
             style: GoogleFonts.poppins(
               fontSize: Responsive.fontSize(context, 36,
-                mobileSmallScale: 0.7,
-                mobileLargeScale: 0.85,
-                tabletScale: 0.95,
-                desktopScale: 1.0,
-              ),
+                  mobileSmallScale: 0.7,
+                  mobileLargeScale: 0.85,
+                  tabletScale: 0.95,
+                  desktopScale: 1.0),
               fontWeight: FontWeight.bold,
               color: const Color(0xFF2D3748),
             ),
@@ -149,14 +147,13 @@ class _AboutSectionState extends ConsumerState<AboutSection> {
           child: Container(
             constraints: const BoxConstraints(maxWidth: 840),
             child: Text(
-              'For over a decade, DentalCare Clinic has been committed to providing exceptional dental care to our community. We combine advanced technology with a gentle, personalized approach to ensure every patient receives the best possible treatment in a comfortable and welcoming environment.',
+              loc.aboutDescription,
               style: GoogleFonts.poppins(
                 fontSize: Responsive.fontSize(context, 16,
-                  mobileSmallScale: 0.9,
-                  mobileLargeScale: 1.0,
-                  tabletScale: 1.05,
-                  desktopScale: 1.1,
-                ),
+                    mobileSmallScale: 0.9,
+                    mobileLargeScale: 1.0,
+                    tabletScale: 1.05,
+                    desktopScale: 1.1),
                 color: Colors.black.withOpacity(0.6),
                 height: 1.6,
               ),
@@ -168,32 +165,32 @@ class _AboutSectionState extends ConsumerState<AboutSection> {
     );
   }
 
-  Widget _buildFeaturesSection(BuildContext context, AboutAnimationState animationState) {
+  Widget _buildFeaturesSection(BuildContext context, AboutAnimationState animationState, AppLocalizations loc) {
     final features = [
       {
         'icon': Icons.favorite_outline,
-        'title': 'Patient-Centered Care',
-        'subtitle': 'We prioritize your comfort and well-being in every treatment decision.',
+        'title': loc.featurePatientCareTitle,
+        'subtitle': loc.featurePatientCareSubtitle,
       },
       {
         'icon': Icons.star_outline,
-        'title': 'Excellence in Dentistry',
-        'subtitle': 'Our team maintains the highest standards of professional excellence.',
+        'title': loc.featureExcellenceTitle,
+        'subtitle': loc.featureExcellenceSubtitle,
       },
       {
         'icon': Icons.people_outline,
-        'title': 'Experienced Team',
-        'subtitle': 'Our dentists have decades of combined experience in dental care.',
+        'title': loc.featureExperiencedTeamTitle,
+        'subtitle': loc.featureExperiencedTeamSubtitle,
       },
       {
         'icon': Icons.schedule_outlined,
-        'title': 'Convenient Scheduling',
-        'subtitle': 'Flexible hours and easy online booking to fit your busy lifestyle.',
+        'title': loc.featureSchedulingTitle,
+        'subtitle': loc.featureSchedulingSubtitle,
       },
     ];
 
-    // Define responsive card height using your Responsive utility
-    final cardHeight = Responsive.valueWhen(context,
+    final cardHeight = Responsive.valueWhen(
+      context,
       mobile: 240.0,
       mobileSmall: 220.0,
       mobileLarge: 250.0,
@@ -210,17 +207,18 @@ class _AboutSectionState extends ConsumerState<AboutSection> {
           return Padding(
             padding: EdgeInsets.only(bottom: Responsive.spacing(context, 32)),
             child: ScaleIn(
-              isVisible: animationState.featuresVisible.length > index ?
-              animationState.featuresVisible[index] : false,
+              isVisible: animationState.featuresVisible.length > index
+                  ? animationState.featuresVisible[index]
+                  : false,
               duration: const Duration(milliseconds: 600),
               child: SizedBox(
                 height: cardHeight,
                 child: _buildFeatureCard(
-                    feature['icon'] as IconData,
-                    feature['title'] as String,
-                    feature['subtitle'] as String,
-                    context,
-                    index
+                  feature['icon'] as IconData,
+                  feature['title'] as String,
+                  feature['subtitle'] as String,
+                  context,
+                  index,
                 ),
               ),
             ),
@@ -228,11 +226,11 @@ class _AboutSectionState extends ConsumerState<AboutSection> {
         }).toList(),
       );
     } else {
-      // Use LayoutBuilder to handle constraints properly
       return LayoutBuilder(
         builder: (context, constraints) {
           final crossAxisCount = 4;
-          final spacing = Responsive.valueWhen(context,
+          final spacing = Responsive.valueWhen(
+            context,
             mobile: 16.0,
             mobileSmall: 13.0,
             mobileLarge: 16.0,
@@ -252,10 +250,11 @@ class _AboutSectionState extends ConsumerState<AboutSection> {
               final feature = entry.value;
               return SizedBox(
                 width: cardWidth,
-                height: cardHeight, // Added fixed height here
+                height: cardHeight,
                 child: ScaleIn(
-                  isVisible: animationState.featuresVisible.length > index ?
-                  animationState.featuresVisible[index] : false,
+                  isVisible: animationState.featuresVisible.length > index
+                      ? animationState.featuresVisible[index]
+                      : false,
                   duration: const Duration(milliseconds: 600),
                   initialScale: 0.9,
                   child: _buildFeatureCard(
@@ -274,7 +273,8 @@ class _AboutSectionState extends ConsumerState<AboutSection> {
     }
   }
 
-  Widget _buildFeatureCard(IconData icon, String title, String subtitle, BuildContext context, int index) {
+  Widget _buildFeatureCard(
+      IconData icon, String title, String subtitle, BuildContext context, int index) {
     return _FeatureCard(
       icon: icon,
       title: title,
@@ -284,19 +284,15 @@ class _AboutSectionState extends ConsumerState<AboutSection> {
     );
   }
 
-  Widget _buildMissionSection(BuildContext context, AboutAnimationState animationState) {
+  Widget _buildMissionSection(BuildContext context, AboutAnimationState animationState, AppLocalizations loc) {
     return FadeInSlideUp(
       isVisible: animationState.isMissionVisible,
       duration: const Duration(milliseconds: 800),
       slideDistance: 40.0,
       child: Container(
-        padding: EdgeInsets.all(Responsive.valueWhen(context,
-          mobile: 32,
-          mobileSmall: 24,
-          mobileLarge: 36,
-          tablet: 40,
-          desktop: 48,
-        )),
+        padding: EdgeInsets.all(
+          Responsive.valueWhen(context, mobile: 32, mobileSmall: 24, mobileLarge: 36, tablet: 40, desktop: 48),
+        ),
         decoration: BoxDecoration(
           color: const Color(0xFFF7FAFC),
           borderRadius: BorderRadius.circular(20),
@@ -305,30 +301,24 @@ class _AboutSectionState extends ConsumerState<AboutSection> {
             ? Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            _buildMissionContent(context, animationState),
+            _buildMissionContent(context, animationState, loc),
             SizedBox(height: Responsive.spacing(context, 40)),
-            _buildStatsGrid(context, animationState),
+            _buildStatsGrid(context, animationState, loc),
           ],
         )
             : Row(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Expanded(
-              flex: 3,
-              child: _buildMissionContent(context, animationState),
-            ),
+            Expanded(flex: 3, child: _buildMissionContent(context, animationState, loc)),
             SizedBox(width: Responsive.spacing(context, 60)),
-            Expanded(
-              flex: 2,
-              child: _buildStatsGrid(context, animationState),
-            ),
+            Expanded(flex: 2, child: _buildStatsGrid(context, animationState, loc)),
           ],
         ),
       ),
     );
   }
 
-  Widget _buildMissionContent(BuildContext context, AboutAnimationState animationState) {
+  Widget _buildMissionContent(BuildContext context, AboutAnimationState animationState, AppLocalizations loc) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -337,14 +327,13 @@ class _AboutSectionState extends ConsumerState<AboutSection> {
           duration: const Duration(milliseconds: 600),
           slideDistance: 60.0,
           child: Text(
-            'Our Mission',
+            loc.missionTitle,
             style: GoogleFonts.poppins(
               fontSize: Responsive.fontSize(context, 32,
-                mobileSmallScale: 0.75,
-                mobileLargeScale: 0.9,
-                tabletScale: 1.0,
-                desktopScale: 1.0,
-              ),
+                  mobileSmallScale: 0.75,
+                  mobileLargeScale: 0.9,
+                  tabletScale: 1.0,
+                  desktopScale: 1.0),
               fontWeight: FontWeight.bold,
               color: const Color(0xFF2D3748),
             ),
@@ -356,14 +345,13 @@ class _AboutSectionState extends ConsumerState<AboutSection> {
           duration: const Duration(milliseconds: 700),
           slideDistance: 40.0,
           child: Text(
-            'We believe that everyone deserves access to high-quality dental care. Our mission is to provide comprehensive, compassionate, and affordable dental services while educating our patients about optimal oral health practices.',
+            loc.missionDescription,
             style: GoogleFonts.poppins(
               fontSize: Responsive.fontSize(context, 14,
-                mobileSmallScale: 0.9,
-                mobileLargeScale: 1.0,
-                tabletScale: 1.0,
-                desktopScale: 1.0,
-              ),
+                  mobileSmallScale: 0.9,
+                  mobileLargeScale: 1.0,
+                  tabletScale: 1.0,
+                  desktopScale: 1.0),
               color: Colors.black.withOpacity(0.6),
               height: 1.6,
             ),
@@ -376,11 +364,11 @@ class _AboutSectionState extends ConsumerState<AboutSection> {
           slideDistance: 30.0,
           child: Column(
             children: [
-              _buildBulletPoint('Comprehensive dental services'),
+              _buildBulletPoint(loc.missionPoint1),
               SizedBox(height: Responsive.spacing(context, 12)),
-              _buildBulletPoint('State-of-the-art technology'),
+              _buildBulletPoint(loc.missionPoint2),
               SizedBox(height: Responsive.spacing(context, 12)),
-              _buildBulletPoint('Comfortable patient experience'),
+              _buildBulletPoint(loc.missionPoint3),
             ],
           ),
         ),
@@ -406,11 +394,10 @@ class _AboutSectionState extends ConsumerState<AboutSection> {
             text,
             style: GoogleFonts.poppins(
               fontSize: Responsive.fontSize(context, 15,
-                mobileSmallScale: 0.9,
-                mobileLargeScale: 1.0,
-                tabletScale: 1.0,
-                desktopScale: 1.1,
-              ),
+                  mobileSmallScale: 0.9,
+                  mobileLargeScale: 1.0,
+                  tabletScale: 1.0,
+                  desktopScale: 1.1),
               color: AppColors.blackColor,
               height: 1.2,
             ),
@@ -420,12 +407,12 @@ class _AboutSectionState extends ConsumerState<AboutSection> {
     );
   }
 
-  Widget _buildStatsGrid(BuildContext context, AboutAnimationState animationState) {
+  Widget _buildStatsGrid(BuildContext context, AboutAnimationState animationState, AppLocalizations loc) {
     final stats = [
-      {'number': '10+', 'label': 'Years of Service'},
-      {'number': '5000+', 'label': 'Happy Patients'},
-      {'number': '8', 'label': 'Expert Dentists'},
-      {'number': '24/7', 'label': 'Emergency Care'},
+      {'number': '10+', 'label': loc.statYearsOfService},
+      {'number': '5000+', 'label': loc.statHappyPatients},
+      {'number': '8', 'label': loc.statExpertDentists},
+      {'number': '24/7', 'label': loc.statEmergencyCare},
     ];
 
     return Column(
@@ -449,9 +436,11 @@ class _AboutSectionState extends ConsumerState<AboutSection> {
     );
   }
 
-  Widget _buildAnimatedStatCard(Map<String, String> stat, int index, BuildContext context, AboutAnimationState animationState) {
-    final isVisible = animationState.statsVisible.length > index ?
-    animationState.statsVisible[index] : false;
+  Widget _buildAnimatedStatCard(
+      Map<String, String> stat, int index, BuildContext context, AboutAnimationState animationState) {
+    final isVisible = animationState.statsVisible.length > index
+        ? animationState.statsVisible[index]
+        : false;
 
     return ScaleIn(
       isVisible: isVisible,
@@ -481,22 +470,20 @@ class _AboutSectionState extends ConsumerState<AboutSection> {
           duration: const Duration(milliseconds: 1200),
           numberStyle: GoogleFonts.poppins(
             fontSize: Responsive.fontSize(context, 28,
-              mobileSmallScale: 0.75,
-              mobileLargeScale: 0.9,
-              tabletScale: 0.79,
-              desktopScale: 1.1,
-            ),
+                mobileSmallScale: 0.75,
+                mobileLargeScale: 0.9,
+                tabletScale: 0.79,
+                desktopScale: 1.1),
             fontWeight: FontWeight.bold,
             color: AppColors.primaryColor,
             height: 1,
           ),
           labelStyle: GoogleFonts.poppins(
             fontSize: Responsive.fontSize(context, 14,
-              mobileSmallScale: 0.85,
-              mobileLargeScale: 0.95,
-              tabletScale: 1.0,
-              desktopScale: 1.1,
-            ),
+                mobileSmallScale: 0.85,
+                mobileLargeScale: 0.95,
+                tabletScale: 1.0,
+                desktopScale: 1.1),
             color: const Color(0xFF4A5568),
             fontWeight: FontWeight.w500,
           ),
@@ -567,14 +554,16 @@ class _FeatureCardState extends State<_FeatureCard> with SingleTickerProviderSta
             height: double.infinity,
             width: double.infinity,
             padding: EdgeInsets.symmetric(
-              horizontal: Responsive.valueWhen(context,
+              horizontal: Responsive.valueWhen(
+                context,
                 mobile: 20,
                 mobileSmall: 16,
                 mobileLarge: 24,
                 tablet: 12,
                 desktop: 26,
               ),
-              vertical: Responsive.valueWhen(context,
+              vertical: Responsive.valueWhen(
+                context,
                 mobile: 24,
                 mobileSmall: 20,
                 mobileLarge: 28,
@@ -587,90 +576,58 @@ class _FeatureCardState extends State<_FeatureCard> with SingleTickerProviderSta
               borderRadius: BorderRadius.circular(16),
               boxShadow: [
                 BoxShadow(
-                  color: _isHovered && enableHover ? Colors.grey.shade300 : Colors.grey.shade200,
-                  blurRadius: enableHover ? _shadowAnimation.value : 8.0,
-                  spreadRadius: _isHovered && enableHover ? 3 : 2,
-                  offset: const Offset(0, 4),
+                  color: _isHovered && enableHover
+                      ? Colors.grey.shade300
+                      : Colors.grey.shade200,
+                  blurRadius: _shadowAnimation.value,
+                  spreadRadius: 1,
+                  offset: const Offset(0, 2),
                 ),
               ],
+              border: Border.all(color: const Color(0xFFF1F1F1)),
             ),
             child: Column(
-              mainAxisAlignment: MainAxisAlignment.center, // Center content vertically
-              crossAxisAlignment: CrossAxisAlignment.center,
+              mainAxisAlignment: MainAxisAlignment.center,
               children: [
-                TweenAnimationBuilder<double>(
-                  tween: Tween(begin: 0.0, end: _isHovered && enableHover ? 1.0 : 0.0),
-                  duration: const Duration(milliseconds: 200),
-                  builder: (context, value, child) {
-                    return Container(
-                      padding: EdgeInsets.all(
-                        Responsive.valueWhen(context,
-                          mobile: 12,
-                          mobileSmall: 10,
-                          mobileLarge: 14,
-                          tablet: 8,
-                          desktop: 15,
-                        ),
-                      ),
-                      decoration: BoxDecoration(
-                        color: AppColors.primaryColor.withOpacity(0.1 + (value * 0.05)),
-                        borderRadius: BorderRadius.circular(12),
-                      ),
-                      child: Icon(
-                        widget.icon,
-                        color: AppColors.primaryColor,
-                        size: Responsive.valueWhen(context,
-                          mobile: 28,
-                          mobileSmall: 24,
-                          mobileLarge: 30,
-                          tablet: 30,
-                          desktop: 32,
-                        ),
-                      ),
-                    );
-                  },
+                Icon(
+                  widget.icon,
+                  size: Responsive.valueWhen(
+                    context,
+                    mobile: 38,
+                    mobileSmall: 30,
+                    mobileLarge: 36,
+                    tablet: 40,
+                    desktop: 50,
+                  ),
+                  color: AppColors.primaryColor,
                 ),
-
                 SizedBox(height: Responsive.spacing(context, 16)),
-
-                Flexible( // Allow text to shrink if needed
-                  child: Text(
-                    widget.title,
-                    style: GoogleFonts.poppins(
-                      fontSize: Responsive.fontSize(context, 18,
+                Text(
+                  widget.title,
+                  style: GoogleFonts.poppins(
+                    fontSize: Responsive.fontSize(context, 16,
+                        mobileSmallScale: 0.85,
+                        mobileLargeScale: 1.0,
+                        tabletScale: 1.0,
+                        desktopScale: 1.1),
+                    fontWeight: FontWeight.w600,
+                    color: const Color(0xFF2D3748),
+                  ),
+                  textAlign: TextAlign.center,
+                ),
+                SizedBox(height: Responsive.spacing(context, 10)),
+                Text(
+                  widget.subtitle,
+                  style: GoogleFonts.poppins(
+                    fontSize: Responsive.fontSize(context, 13,
                         mobileSmallScale: 0.9,
                         mobileLargeScale: 1.0,
-                        tabletScale: 0.9,
-                        desktopScale: 1.0,
-                      ),
-                      fontWeight: FontWeight.w600,
-                      color: const Color(0xFF2D3748),
-                    ),
-                    textAlign: TextAlign.center,
-                    maxLines: 2,
-                    overflow: TextOverflow.ellipsis,
+                        tabletScale: 1.0,
+                        desktopScale: 1.0),
+                    color: Colors.black.withOpacity(0.55),
+                    height: 1.4,
                   ),
-                ),
-
-                SizedBox(height: Responsive.spacing(context, 12)),
-
-                Expanded( // Allow subtitle to take remaining space
-                  child: Text(
-                    widget.subtitle,
-                    style: GoogleFonts.poppins(
-                      fontSize: Responsive.fontSize(context, 15,
-                        mobileSmallScale: 0.85,
-                        mobileLargeScale: 0.95,
-                        tabletScale: 0.8,
-                        desktopScale: 1.0,
-                      ),
-                      color: const Color(0xFF4A5568),
-                      height: 1.4,
-                    ),
-                    textAlign: TextAlign.center,
-                    maxLines: 4,
-                    overflow: TextOverflow.ellipsis,
-                  ),
+                  textAlign: TextAlign.center,
                 ),
               ],
             ),
@@ -680,7 +637,7 @@ class _FeatureCardState extends State<_FeatureCard> with SingleTickerProviderSta
     );
 
     if (enableHover) {
-      return MouseRegion(
+      cardContent = MouseRegion(
         onEnter: (_) {
           setState(() => _isHovered = true);
           _hoverController.forward();

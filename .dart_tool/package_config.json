@@ -50,6 +50,24 @@
       "languageVersion": "3.4"
     },
     {
+      "name": "cloud_functions",
+      "rootUri": "file:///Users/hashimkhan/.pub-cache/hosted/pub.dev/cloud_functions-6.0.1",
+      "packageUri": "lib/",
+      "languageVersion": "3.2"
+    },
+    {
+      "name": "cloud_functions_platform_interface",
+      "rootUri": "file:///Users/hashimkhan/.pub-cache/hosted/pub.dev/cloud_functions_platform_interface-5.8.4",
+      "packageUri": "lib/",
+      "languageVersion": "3.2"
+    },
+    {
+      "name": "cloud_functions_web",
+      "rootUri": "file:///Users/hashimkhan/.pub-cache/hosted/pub.dev/cloud_functions_web-5.0.1",
+      "packageUri": "lib/",
+      "languageVersion": "3.4"
+    },
+    {
       "name": "collection",
       "rootUri": "file:///Users/hashimkhan/.pub-cache/hosted/pub.dev/collection-1.19.1",
       "packageUri": "lib/",
@@ -104,6 +122,24 @@
       "languageVersion": "3.0"
     },
     {
+      "name": "firebase_core",
+      "rootUri": "file:///Users/hashimkhan/.pub-cache/hosted/pub.dev/firebase_core-4.1.0",
+      "packageUri": "lib/",
+      "languageVersion": "3.2"
+    },
+    {
+      "name": "firebase_core_platform_interface",
+      "rootUri": "file:///Users/hashimkhan/.pub-cache/hosted/pub.dev/firebase_core_platform_interface-6.0.0",
+      "packageUri": "lib/",
+      "languageVersion": "3.2"
+    },
+    {
+      "name": "firebase_core_web",
+      "rootUri": "file:///Users/hashimkhan/.pub-cache/hosted/pub.dev/firebase_core_web-3.1.0",
+      "packageUri": "lib/",
+      "languageVersion": "3.4"
+    },
+    {
       "name": "flutter",
       "rootUri": "file:///Users/hashimkhan/developer/flutter/packages/flutter",
       "packageUri": "lib/",
@@ -114,6 +150,12 @@
       "rootUri": "file:///Users/hashimkhan/.pub-cache/hosted/pub.dev/flutter_lints-5.0.0",
       "packageUri": "lib/",
       "languageVersion": "3.5"
+    },
+    {
+      "name": "flutter_localizations",
+      "rootUri": "file:///Users/hashimkhan/developer/flutter/packages/flutter_localizations",
+      "packageUri": "lib/",
+      "languageVersion": "3.7"
     },
     {
       "name": "flutter_plugin_android_lifecycle",
@@ -216,6 +258,12 @@
       "rootUri": "file:///Users/hashimkhan/.pub-cache/hosted/pub.dev/http_parser-4.1.2",
       "packageUri": "lib/",
       "languageVersion": "3.4"
+    },
+    {
+      "name": "intl",
+      "rootUri": "file:///Users/hashimkhan/.pub-cache/hosted/pub.dev/intl-0.20.2",
+      "packageUri": "lib/",
+      "languageVersion": "3.3"
     },
     {
       "name": "io",

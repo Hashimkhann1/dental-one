@@ -1,3 +1,4 @@
+import 'package:cloud_functions/cloud_functions.dart';
 import 'package:dental_one/res/app_colors/app_colors.dart';
 import 'package:dental_one/res/responsive/responsive.dart';
 import 'package:flutter/material.dart';
@@ -40,6 +41,103 @@ class _BookNowSectionState extends State<BookNowSection> {
     '5:00 PM',
   ];
 
+  Future<void> _submitForm() async {
+    if (_formKey.currentState!.validate()) {
+      if (_selectedDate == null) {
+        ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(content: Text('Please select a date'))
+        );
+        return;
+      }
+
+      if (_selectedTime == null) {
+        ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(content: Text('Please select a time'))
+        );
+        return;
+      }
+
+      try {
+        // Show loading indicator
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+            content: Text('Sending appointment request...'),
+            duration: Duration(seconds: 2),
+          ),
+        );
+
+        // Call Firebase Function (Updated for v2 functions)
+        final HttpsCallable callable = FirebaseFunctions.instance
+            .httpsCallable('sendMail');
+
+        final result = await callable.call({
+          "subject": "🦷 New Dental Appointment Request - ${_fullNameController.text}",
+          "text": """
+New Appointment Request
+
+Patient Details:
+• Full Name: ${_fullNameController.text}
+• Email: ${_emailController.text}
+• Phone: ${_phoneController.text}
+
+Appointment Details:
+• Service: $_selectedService
+• Date: ${_selectedDate!.day}/${_selectedDate!.month}/${_selectedDate!.year}
+• Time: $_selectedTime
+
+Additional Notes:
+${_notesController.text.isEmpty ? "None" : _notesController.text}
+
+Please contact the patient to confirm this appointment.
+        """,
+        });
+
+        // Success message
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+            content: Text(
+              "Your appointment request has been sent successfully! Our team will contact you soon to confirm.",
+            ),
+            backgroundColor: AppColors.emergencyGreenColor,
+            duration: Duration(seconds: 4),
+          ),
+        );
+
+        // Reset form after success
+        _formKey.currentState!.reset();
+        setState(() {
+          _selectedService = null;
+          _selectedDate = null;
+          _selectedTime = null;
+        });
+        _fullNameController.clear();
+        _emailController.clear();
+        _phoneController.clear();
+        _notesController.clear();
+
+      } catch (e) {
+        // Error handling
+        String errorMessage = "Failed to send appointment request. Please try again.";
+
+        if (e.toString().contains('unauthenticated')) {
+          errorMessage = "Email service configuration error. Please contact support.";
+        } else if (e.toString().contains('unavailable')) {
+          errorMessage = "Network error. Please check your connection and try again.";
+        }
+
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text(errorMessage),
+            backgroundColor: Colors.red,
+            duration: const Duration(seconds: 4),
+          ),
+        );
+
+        print("Error details: $e"); // For debugging
+      }
+    }
+  }
+
   @override
   void dispose() {
     _fullNameController.dispose();
@@ -80,7 +178,9 @@ class _BookNowSectionState extends State<BookNowSection> {
         Text(
           'Book Your Appointment',
           style: GoogleFonts.poppins(
-            fontSize: Responsive.isMobile(context) ? 32 : (Responsive.isTablet(context) ? 36 : 40),
+            fontSize: Responsive.isMobile(context)
+                ? 32
+                : (Responsive.isTablet(context) ? 36 : 40),
             fontWeight: FontWeight.bold,
             color: AppColors.textPrimaryColor,
           ),
@@ -112,18 +212,12 @@ class _BookNowSectionState extends State<BookNowSection> {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           // Left Side - Form
-          Expanded(
-            flex: 2,
-            child: _buildBookingForm(context),
-          ),
+          Expanded(flex: 2, child: _buildBookingForm(context)),
 
           const SizedBox(width: 40),
 
           // Right Side - Contact Info
-          Expanded(
-            flex: 2,
-            child: _buildContactInfo(context),
-          ),
+          Expanded(flex: 2, child: _buildContactInfo(context)),
         ],
       ),
     );
@@ -141,7 +235,10 @@ class _BookNowSectionState extends State<BookNowSection> {
 
   Widget _buildBookingForm(BuildContext context) {
     return Container(
-      padding: EdgeInsets.symmetric(horizontal: Responsive.isMobile(context) ? 24 : 44 ,vertical: Responsive.isMobile(context) ? 20 : 24),
+      padding: EdgeInsets.symmetric(
+        horizontal: Responsive.isMobile(context) ? 24 : 44,
+        vertical: Responsive.isMobile(context) ? 20 : 24,
+      ),
       decoration: BoxDecoration(
         color: AppColors.whiteColor,
         borderRadius: BorderRadius.circular(16),
@@ -195,7 +292,9 @@ class _BookNowSectionState extends State<BookNowSection> {
                 if (value == null || value.isEmpty) {
                   return 'Please enter your email';
                 }
-                if (!RegExp(r'^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$').hasMatch(value)) {
+                if (!RegExp(
+                  r'^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$',
+                ).hasMatch(value)) {
                   return 'Please enter a valid email';
                 }
                 return null;
@@ -240,9 +339,7 @@ class _BookNowSectionState extends State<BookNowSection> {
             Row(
               children: [
                 // Date Picker
-                Expanded(
-                  child: _buildDateField(context),
-                ),
+                Expanded(child: _buildDateField(context)),
 
                 const SizedBox(width: 16),
 
@@ -283,7 +380,10 @@ class _BookNowSectionState extends State<BookNowSection> {
               width: double.infinity,
               child: ElevatedButton.icon(
                 onPressed: _submitForm,
-                icon: const Icon(Icons.calendar_today, color: AppColors.whiteColor),
+                icon: const Icon(
+                  Icons.calendar_today,
+                  color: AppColors.whiteColor,
+                ),
                 label: Text(
                   'Request Appointment',
                   style: GoogleFonts.inter(
@@ -356,11 +456,7 @@ class _BookNowSectionState extends State<BookNowSection> {
 
           const SizedBox(height: 20),
 
-          _buildContactItem(
-            Icons.phone_outlined,
-            'Phone',
-            '+1 (555) 123-4567',
-          ),
+          _buildContactItem(Icons.phone_outlined, 'Phone', '+1 (555) 123-4567'),
 
           const SizedBox(height: 16),
 
@@ -514,9 +610,7 @@ class _BookNowSectionState extends State<BookNowSection> {
           validator: validator,
           decoration: InputDecoration(
             hintText: hint,
-            hintStyle: GoogleFonts.inter(
-              color: AppColors.textSecondaryColor,
-            ),
+            hintStyle: GoogleFonts.inter(color: AppColors.textSecondaryColor),
             border: OutlineInputBorder(
               borderRadius: BorderRadius.circular(8),
               borderSide: const BorderSide(color: AppColors.borderColor),
@@ -527,9 +621,15 @@ class _BookNowSectionState extends State<BookNowSection> {
             ),
             focusedBorder: OutlineInputBorder(
               borderRadius: BorderRadius.circular(8),
-              borderSide: const BorderSide(color: AppColors.primaryColor, width: 2),
+              borderSide: const BorderSide(
+                color: AppColors.primaryColor,
+                width: 2,
+              ),
             ),
-            contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+            contentPadding: const EdgeInsets.symmetric(
+              horizontal: 16,
+              vertical: 12,
+            ),
           ),
         ),
       ],
@@ -559,18 +659,13 @@ class _BookNowSectionState extends State<BookNowSection> {
         DropdownButtonFormField<String>(
           value: value,
           items: items.map((String item) {
-            return DropdownMenuItem<String>(
-              value: item,
-              child: Text(item),
-            );
+            return DropdownMenuItem<String>(value: item, child: Text(item));
           }).toList(),
           onChanged: onChanged,
           validator: validator,
           decoration: InputDecoration(
             hintText: hint,
-            hintStyle: GoogleFonts.inter(
-              color: AppColors.textSecondaryColor,
-            ),
+            hintStyle: GoogleFonts.inter(color: AppColors.textSecondaryColor),
             border: OutlineInputBorder(
               borderRadius: BorderRadius.circular(8),
               borderSide: const BorderSide(color: AppColors.borderColor),
@@ -581,9 +676,15 @@ class _BookNowSectionState extends State<BookNowSection> {
             ),
             focusedBorder: OutlineInputBorder(
               borderRadius: BorderRadius.circular(8),
-              borderSide: const BorderSide(color: AppColors.primaryColor, width: 2),
+              borderSide: const BorderSide(
+                color: AppColors.primaryColor,
+                width: 2,
+              ),
             ),
-            contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+            contentPadding: const EdgeInsets.symmetric(
+              horizontal: 16,
+              vertical: 12,
+            ),
           ),
         ),
       ],
@@ -641,11 +742,7 @@ class _BookNowSectionState extends State<BookNowSection> {
     return Row(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Icon(
-          icon,
-          color: AppColors.primaryColor,
-          size: 20,
-        ),
+        Icon(icon, color: AppColors.primaryColor, size: 20),
         const SizedBox(width: 12),
         Expanded(
           child: Column(
@@ -706,9 +803,9 @@ class _BookNowSectionState extends State<BookNowSection> {
       builder: (context, child) {
         return Theme(
           data: Theme.of(context).copyWith(
-            colorScheme: Theme.of(context).colorScheme.copyWith(
-              primary: AppColors.primaryColor,
-            ),
+            colorScheme: Theme.of(
+              context,
+            ).colorScheme.copyWith(primary: AppColors.primaryColor),
           ),
           child: child!,
         );
@@ -722,36 +819,36 @@ class _BookNowSectionState extends State<BookNowSection> {
     }
   }
 
-  void _submitForm() {
-    if (_formKey.currentState!.validate()) {
-      if (_selectedDate == null) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('Please select a date')),
-        );
-        return;
-      }
-
-      // Handle form submission here
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-          content: Text('Appointment request submitted successfully!'),
-          backgroundColor: AppColors.emergencyGreenColor,
-        ),
-      );
-
-      // Reset form
-      _formKey.currentState!.reset();
-      setState(() {
-        _selectedService = null;
-        _selectedDate = null;
-        _selectedTime = null;
-      });
-      _fullNameController.clear();
-      _emailController.clear();
-      _phoneController.clear();
-      _notesController.clear();
-    }
-  }
+  // void _submitForm() {
+  //   if (_formKey.currentState!.validate()) {
+  //     if (_selectedDate == null) {
+  //       ScaffoldMessenger.of(
+  //         context,
+  //       ).showSnackBar(const SnackBar(content: Text('Please select a date')));
+  //       return;
+  //     }
+  //
+  //     // Handle form submission here
+  //     ScaffoldMessenger.of(context).showSnackBar(
+  //       const SnackBar(
+  //         content: Text('Appointment request submitted successfully!'),
+  //         backgroundColor: AppColors.emergencyGreenColor,
+  //       ),
+  //     );
+  //
+  //     // Reset form
+  //     _formKey.currentState!.reset();
+  //     setState(() {
+  //       _selectedService = null;
+  //       _selectedDate = null;
+  //       _selectedTime = null;
+  //     });
+  //     _fullNameController.clear();
+  //     _emailController.clear();
+  //     _phoneController.clear();
+  //     _notesController.clear();
+  //   }
+  // }
 
   double _getHorizontalPadding(BuildContext context) {
     if (Responsive.isMobile(context)) return 20;

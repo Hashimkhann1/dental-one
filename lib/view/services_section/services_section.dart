@@ -1,7 +1,7 @@
+import 'package:dental_one/l10n/app_localizations.dart';
 import 'package:dental_one/res/app_colors/app_colors.dart';
 import 'package:dental_one/res/responsive/responsive.dart';
 import 'package:dental_one/view_model/service_view_model/service_view_model.dart';
-
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:google_fonts/google_fonts.dart';
@@ -52,6 +52,7 @@ class _ServicesSectionState extends ConsumerState<ServicesSection> {
   @override
   Widget build(BuildContext context) {
     final animationState = ref.watch(servicesAnimationProvider);
+    final l10n = AppLocalizations.of(context)!;
 
     return Container(
       width: double.infinity,
@@ -77,7 +78,7 @@ class _ServicesSectionState extends ConsumerState<ServicesSection> {
       child: Column(
         children: [
           // Header Section with Animation
-          _buildAnimatedHeaderSection(context, animationState.isHeaderVisible),
+          _buildAnimatedHeaderSection(context, animationState.isHeaderVisible, l10n),
 
           SizedBox(height: Responsive.spacing(context, 50,
             mobileSmallMultiplier: 0.8,
@@ -96,10 +97,11 @@ class _ServicesSectionState extends ConsumerState<ServicesSection> {
                 mobileLarge: 20,
                 tablet: 4,
                 tabletLarge: 30,
-                desktop: 140,
+                desktop: MediaQuery.of(context).size.width < 1440 ? MediaQuery.of(context).size.width * 0.01 : MediaQuery.of(context).size.width * 0.08,
+
               ),
             ),
-            child: _buildAnimatedServicesGrid(context, animationState),
+            child: _buildAnimatedServicesGrid(context, animationState, l10n),
           ),
 
           SizedBox(height: Responsive.spacing(context, 70,
@@ -111,13 +113,13 @@ class _ServicesSectionState extends ConsumerState<ServicesSection> {
           )),
 
           // Footer Section with Animation
-          _buildAnimatedFooterSection(context, animationState.isFooterVisible),
+          _buildAnimatedFooterSection(context, animationState.isFooterVisible, l10n),
         ],
       ),
     );
   }
 
-  Widget _buildAnimatedHeaderSection(BuildContext context, bool isVisible) {
+  Widget _buildAnimatedHeaderSection(BuildContext context, bool isVisible, AppLocalizations l10n) {
     return AnimatedOpacity(
       opacity: isVisible ? 1.0 : 0.0,
       duration: const Duration(milliseconds: 600),
@@ -128,7 +130,7 @@ class _ServicesSectionState extends ConsumerState<ServicesSection> {
         child: Column(
           children: [
             Text(
-              'Our Dental Services',
+              l10n.servicesTitle,
               style: GoogleFonts.inter(
                 fontSize: Responsive.fontSize(context, 40,
                   mobileSmallScale: 0.8,    // 32px
@@ -148,7 +150,7 @@ class _ServicesSectionState extends ConsumerState<ServicesSection> {
             Container(
               constraints: const BoxConstraints(maxWidth: 800),
               child: Text(
-                'We offer a comprehensive range of dental services to meet all your oral health needs. From routine cleanings to advanced procedures, our expert team is here to help you achieve and maintain optimal dental health.',
+                l10n.servicesDescription,
                 style: GoogleFonts.inter(
                   fontSize: Responsive.fontSize(context, 18,
                     mobileSmallScale: 0.85,   // 15px
@@ -169,43 +171,73 @@ class _ServicesSectionState extends ConsumerState<ServicesSection> {
     );
   }
 
-  Widget _buildAnimatedServicesGrid(BuildContext context, ServicesAnimationState animationState) {
+  Widget _buildAnimatedServicesGrid(BuildContext context, ServicesAnimationState animationState, AppLocalizations l10n) {
     final services = [
       {
         'icon': Icons.favorite_outline,
-        'title': 'General Dentistry',
-        'description': 'Complete oral care with cleanings, fillings, and preventive treatments.',
-        'features': ['Regular Cleanings', 'Cavity Fillings', 'Oral Exams', 'Fluoride Treatments'],
+        'title': l10n.serviceGeneralTitle,
+        'description': l10n.serviceGeneralDescription,
+        'features': [
+          l10n.serviceGeneralFeature1,
+          l10n.serviceGeneralFeature2,
+          l10n.serviceGeneralFeature3,
+          l10n.serviceGeneralFeature4,
+        ],
       },
       {
         'icon': Icons.auto_awesome,
-        'title': 'Cosmetic Dentistry',
-        'description': 'Enhance your smile with our advanced cosmetic dental procedures.',
-        'features': ['Teeth Whitening', 'Veneers', 'Bonding', 'Smile Makeovers'],
+        'title': l10n.serviceCosmeticTitle,
+        'description': l10n.serviceCosmeticDescription,
+        'features': [
+          l10n.serviceCosmeticFeature1,
+          l10n.serviceCosmeticFeature2,
+          l10n.serviceCosmeticFeature3,
+          l10n.serviceCosmeticFeature4,
+        ],
       },
       {
         'icon': Icons.straighten,
-        'title': 'Orthodontics',
-        'description': 'Straighten your teeth with traditional braces or modern clear aligners.',
-        'features': ['Metal Braces', 'Clear Aligners', 'Retainers', 'Bite Correction'],
+        'title': l10n.serviceOrthoTitle,
+        'description': l10n.serviceOrthoDescription,
+        'features': [
+          l10n.serviceOrthoFeature1,
+          l10n.serviceOrthoFeature2,
+          l10n.serviceOrthoFeature3,
+          l10n.serviceOrthoFeature4,
+        ],
       },
       {
         'icon': Icons.local_hospital_outlined,
-        'title': 'Emergency Care',
-        'description': 'Immediate dental care for urgent situations and dental emergencies.',
-        'features': ['24/7 Availability', 'Pain Relief', 'Urgent Repairs', 'Same-Day Treatment'],
+        'title': l10n.serviceEmergencyTitle,
+        'description': l10n.serviceEmergencyDescription,
+        'features': [
+          l10n.serviceEmergencyFeature1,
+          l10n.serviceEmergencyFeature2,
+          l10n.serviceEmergencyFeature3,
+          l10n.serviceEmergencyFeature4,
+        ],
       },
       {
         'icon': Icons.medical_services_outlined,
-        'title': 'Oral Surgery',
-        'description': 'Expert surgical procedures performed with precision and care.',
-        'features': ['Tooth Extractions', 'Wisdom Teeth', 'Implant Surgery', 'Gum Surgery'],
+        'title': l10n.serviceSurgeryTitle,
+        'description': l10n.serviceSurgeryDescription,
+        'features': [
+          l10n.serviceSurgeryFeature1,
+          l10n.serviceSurgeryFeature2,
+          l10n.serviceSurgeryFeature3,
+          l10n.serviceSurgeryFeature4,
+        ],
       },
       {
         'icon': Icons.child_care,
-        'title': 'Pediatric Dentistry',
-        'description': 'Specialized dental care designed specifically for children and teens.',
-        'features': ['Kid-Friendly Environment', 'Preventive Care', 'Sealants', 'Education'],
+        'title': l10n.servicePediatricTitle,
+        'description': l10n.servicePediatricDescription,
+        'features': [
+          l10n.servicePediatricFeature1,
+          l10n.servicePediatricFeature2,
+          l10n.servicePediatricFeature3,
+          l10n.servicePediatricFeature4,
+        ],
       },
     ];
 
@@ -220,7 +252,7 @@ class _ServicesSectionState extends ConsumerState<ServicesSection> {
 
           return Padding(
             padding: EdgeInsets.only(bottom: Responsive.spacing(context, 20)),
-            child: _buildAnimatedServiceCard(service, context, isVisible, index),
+            child: _buildAnimatedServiceCard(service, context, isVisible, index, l10n),
           );
         }).toList(),
       );
@@ -252,7 +284,7 @@ class _ServicesSectionState extends ConsumerState<ServicesSection> {
 
               return SizedBox(
                 width: cardWidth,
-                child: _buildAnimatedServiceCard(service, context, isVisible, index),
+                child: _buildAnimatedServiceCard(service, context, isVisible, index, l10n),
               );
             }).toList(),
           );
@@ -261,7 +293,7 @@ class _ServicesSectionState extends ConsumerState<ServicesSection> {
     }
   }
 
-  Widget _buildAnimatedServiceCard(Map<String, dynamic> service, BuildContext context, bool isVisible, int index) {
+  Widget _buildAnimatedServiceCard(Map<String, dynamic> service, BuildContext context, bool isVisible, int index, AppLocalizations l10n) {
     return AnimatedOpacity(
       opacity: isVisible ? 1.0 : 0.0,
       duration: Duration(milliseconds: 400 + (index * 100)), // Stagger animation
@@ -275,12 +307,13 @@ class _ServicesSectionState extends ConsumerState<ServicesSection> {
           description: service['description'] as String,
           features: List<String>.from(service['features']),
           context: context,
+          l10n: l10n,
         ),
       ),
     );
   }
 
-  Widget _buildAnimatedFooterSection(BuildContext context, bool isVisible) {
+  Widget _buildAnimatedFooterSection(BuildContext context, bool isVisible, AppLocalizations l10n) {
     return AnimatedOpacity(
       opacity: isVisible ? 1.0 : 0.0,
       duration: const Duration(milliseconds: 600),
@@ -320,7 +353,7 @@ class _ServicesSectionState extends ConsumerState<ServicesSection> {
           child: Column(
             children: [
               Text(
-                "Don't See What You Need?",
+                l10n.footerTitle,
                 style: GoogleFonts.inter(
                   fontSize: Responsive.fontSize(context, 28,
                     mobileSmallScale: 0.75,   // 21px
@@ -346,7 +379,7 @@ class _ServicesSectionState extends ConsumerState<ServicesSection> {
               Container(
                 constraints: const BoxConstraints(maxWidth: 600),
                 child: Text(
-                  'We offer many additional specialized services. Contact us to discuss your specific dental needs and we\'ll be happy to help you find the right treatment plan.',
+                  l10n.footerDescription,
                   style: GoogleFonts.inter(
                     fontSize: Responsive.fontSize(context, 16,
                       mobileSmallScale: 0.85,   // 14px
@@ -395,7 +428,7 @@ class _ServicesSectionState extends ConsumerState<ServicesSection> {
                   elevation: 0,
                 ),
                 child: Text(
-                  'Contact Us Today',
+                  l10n.footerButton,
                   style: GoogleFonts.inter(
                     fontSize: Responsive.fontSize(context, 16,
                       mobileSmallScale: 0.85,   // 14px
@@ -422,6 +455,7 @@ class _ServiceCard extends StatefulWidget {
   final String description;
   final List<String> features;
   final BuildContext context;
+  final AppLocalizations l10n;
 
   const _ServiceCard({
     required this.icon,
@@ -429,6 +463,7 @@ class _ServiceCard extends StatefulWidget {
     required this.description,
     required this.features,
     required this.context,
+    required this.l10n,
   });
 
   @override
@@ -614,7 +649,7 @@ class _ServiceCardState extends State<_ServiceCard> {
                         mainAxisAlignment: MainAxisAlignment.center,
                         children: [
                           Text(
-                            'Learn More',
+                            widget.l10n.learnMore,
                             style: GoogleFonts.inter(
                               fontSize: Responsive.fontSize(context, 15,
                                 mobileSmallScale: 0.9,    // 14px

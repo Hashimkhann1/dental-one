@@ -198,6 +198,9 @@ class _AllSectionsState extends State<AllSections> {
 
   @override
   Widget build(BuildContext context) {
+
+    print(MediaQuery.of(context).size.width);
+
     return Scaffold(
       backgroundColor: const Color(0xFFF7FAFC),
       appBar: MyAppBar(
