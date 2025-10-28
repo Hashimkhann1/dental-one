@@ -49,6 +49,8 @@ android/.gradle/
 android/captures/
 android/.idea/
 android/local.properties
+build
+.dart_tool
 *.iml
 
 # Web related
