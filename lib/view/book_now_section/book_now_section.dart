@@ -1,4 +1,5 @@
 import 'package:cloud_functions/cloud_functions.dart';
+import 'package:dental_one/l10n/app_localizations.dart';
 import 'package:dental_one/res/app_colors/app_colors.dart';
 import 'package:dental_one/res/responsive/responsive.dart';
 import 'package:flutter/material.dart';
@@ -22,37 +23,45 @@ class _BookNowSectionState extends State<BookNowSection> {
   DateTime? _selectedDate;
   String? _selectedTime;
 
-  final List<String> _services = [
-    'General Checkup',
-    'Teeth Cleaning',
-    'Cosmetic Dentistry',
-    'Orthodontics',
-    'Oral Surgery',
-    'Emergency Care',
-  ];
+  List<String> _getServices(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
+    return [
+      l10n.serviceGeneralCheckup,
+      l10n.serviceTeethCleaning,
+      l10n.serviceCosmeticDentistry,
+      l10n.serviceOrthodontics,
+      l10n.serviceOralSurgery,
+      l10n.serviceEmergencyCare,
+    ];
+  }
 
-  final List<String> _timeSlots = [
-    '9:00 AM',
-    '10:00 AM',
-    '11:00 AM',
-    '2:00 PM',
-    '3:00 PM',
-    '4:00 PM',
-    '5:00 PM',
-  ];
+  List<String> _getTimeSlots(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
+    return [
+      l10n.timeSlot9am,
+      l10n.timeSlot10am,
+      l10n.timeSlot11am,
+      l10n.timeSlot2pm,
+      l10n.timeSlot3pm,
+      l10n.timeSlot4pm,
+      l10n.timeSlot5pm,
+    ];
+  }
 
   Future<void> _submitForm() async {
+    final l10n = AppLocalizations.of(context)!;
+
     if (_formKey.currentState!.validate()) {
       if (_selectedDate == null) {
         ScaffoldMessenger.of(context).showSnackBar(
-            const SnackBar(content: Text('Please select a date'))
+            SnackBar(content: Text(l10n.pleaseSelectDate))
         );
         return;
       }
 
       if (_selectedTime == null) {
         ScaffoldMessenger.of(context).showSnackBar(
-            const SnackBar(content: Text('Please select a time'))
+            SnackBar(content: Text(l10n.pleaseSelectTime))
         );
         return;
       }
@@ -60,18 +69,18 @@ class _BookNowSectionState extends State<BookNowSection> {
       try {
         // Show loading indicator
         ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(
-            content: Text('Sending appointment request...'),
-            duration: Duration(seconds: 2),
+          SnackBar(
+            content: Text(l10n.sendingAppointmentRequest),
+            duration: const Duration(seconds: 2),
           ),
         );
 
-        // Call Firebase Function (Updated for v2 functions)
+        // Call Firebase Function
         final HttpsCallable callable = FirebaseFunctions.instance
             .httpsCallable('sendMail');
 
         final result = await callable.call({
-          "subject": "🦷 New Dental Appointment Request - ${_fullNameController.text}",
+          "subject": "${l10n.newAppointmentRequestSubject} - ${_fullNameController.text}",
           "text": """
 New Appointment Request
 
@@ -94,12 +103,10 @@ Please contact the patient to confirm this appointment.
 
         // Success message
         ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(
-            content: Text(
-              "Your appointment request has been sent successfully! Our team will contact you soon to confirm.",
-            ),
+          SnackBar(
+            content: Text(l10n.appointmentSuccessMessage),
             backgroundColor: AppColors.emergencyGreenColor,
-            duration: Duration(seconds: 4),
+            duration: const Duration(seconds: 4),
           ),
         );
 
@@ -117,12 +124,12 @@ Please contact the patient to confirm this appointment.
 
       } catch (e) {
         // Error handling
-        String errorMessage = "Failed to send appointment request. Please try again.";
+        String errorMessage = l10n.appointmentFailedMessage;
 
         if (e.toString().contains('unauthenticated')) {
-          errorMessage = "Email service configuration error. Please contact support.";
+          errorMessage = l10n.emailConfigError;
         } else if (e.toString().contains('unavailable')) {
-          errorMessage = "Network error. Please check your connection and try again.";
+          errorMessage = l10n.networkError;
         }
 
         ScaffoldMessenger.of(context).showSnackBar(
@@ -173,10 +180,12 @@ Please contact the patient to confirm this appointment.
   }
 
   Widget _buildHeaderSection(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
+
     return Column(
       children: [
         Text(
-          'Book Your Appointment',
+          l10n.bookYourAppointment,
           style: GoogleFonts.poppins(
             fontSize: Responsive.isMobile(context)
                 ? 32
@@ -192,7 +201,7 @@ Please contact the patient to confirm this appointment.
         Container(
           constraints: const BoxConstraints(maxWidth: 800),
           child: Text(
-            'Schedule your dental appointment with our expert team. We offer flexible scheduling and comprehensive dental services to meet all your oral health needs.',
+            l10n.bookAppointmentDescription,
             style: GoogleFonts.inter(
               fontSize: Responsive.isMobile(context) ? 16 : 18,
               color: AppColors.textSecondaryColor,
@@ -234,6 +243,8 @@ Please contact the patient to confirm this appointment.
   }
 
   Widget _buildBookingForm(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
+
     return Container(
       padding: EdgeInsets.symmetric(
         horizontal: Responsive.isMobile(context) ? 24 : 44,
@@ -257,7 +268,7 @@ Please contact the patient to confirm this appointment.
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Text(
-              'Schedule Your Visit',
+              l10n.scheduleYourVisit,
               style: GoogleFonts.poppins(
                 fontSize: Responsive.isMobile(context) ? 22 : 24,
                 fontWeight: FontWeight.bold,
@@ -270,11 +281,11 @@ Please contact the patient to confirm this appointment.
             // Full Name Field
             _buildTextField(
               controller: _fullNameController,
-              label: 'Full Name',
-              hint: 'Enter your full name',
+              label: l10n.fullName,
+              hint: l10n.enterFullName,
               validator: (value) {
                 if (value == null || value.isEmpty) {
-                  return 'Please enter your full name';
+                  return l10n.pleaseEnterFullName;
                 }
                 return null;
               },
@@ -285,17 +296,17 @@ Please contact the patient to confirm this appointment.
             // Email Field
             _buildTextField(
               controller: _emailController,
-              label: 'Email Address',
-              hint: 'Enter your email address',
+              label: l10n.emailAddress,
+              hint: l10n.enterEmail,
               keyboardType: TextInputType.emailAddress,
               validator: (value) {
                 if (value == null || value.isEmpty) {
-                  return 'Please enter your email';
+                  return l10n.pleaseEnterEmail;
                 }
                 if (!RegExp(
                   r'^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$',
                 ).hasMatch(value)) {
-                  return 'Please enter a valid email';
+                  return l10n.pleaseEnterValidEmail;
                 }
                 return null;
               },
@@ -306,12 +317,12 @@ Please contact the patient to confirm this appointment.
             // Phone Field
             _buildTextField(
               controller: _phoneController,
-              label: 'Phone Number',
-              hint: 'Enter your phone number',
+              label: l10n.phoneNumber,
+              hint: l10n.enterPhoneNumber,
               keyboardType: TextInputType.phone,
               validator: (value) {
                 if (value == null || value.isEmpty) {
-                  return 'Please enter your phone number';
+                  return l10n.pleaseEnterPhoneNumber;
                 }
                 return null;
               },
@@ -321,14 +332,14 @@ Please contact the patient to confirm this appointment.
 
             // Service Dropdown
             _buildDropdownField(
-              label: 'Service Needed',
+              label: l10n.serviceNeeded,
               value: _selectedService,
-              items: _services,
-              hint: 'Select a service',
+              items: _getServices(context),
+              hint: l10n.selectService,
               onChanged: (value) => setState(() => _selectedService = value),
               validator: (value) {
                 if (value == null || value.isEmpty) {
-                  return 'Please select a service';
+                  return l10n.pleaseSelectService;
                 }
                 return null;
               },
@@ -346,14 +357,14 @@ Please contact the patient to confirm this appointment.
                 // Time Dropdown
                 Expanded(
                   child: _buildDropdownField(
-                    label: 'Preferred Time',
+                    label: l10n.preferredTime,
                     value: _selectedTime,
-                    items: _timeSlots,
-                    hint: 'Select time',
+                    items: _getTimeSlots(context),
+                    hint: l10n.selectTime,
                     onChanged: (value) => setState(() => _selectedTime = value),
                     validator: (value) {
                       if (value == null || value.isEmpty) {
-                        return 'Please select time';
+                        return l10n.pleaseSelectTime;
                       }
                       return null;
                     },
@@ -367,8 +378,8 @@ Please contact the patient to confirm this appointment.
             // Notes Field
             _buildTextField(
               controller: _notesController,
-              label: 'Additional Notes',
-              hint: 'Any specific concerns or requests...',
+              label: l10n.additionalNotes,
+              hint: l10n.additionalNotesHint,
               maxLines: 2,
               validator: null,
             ),
@@ -385,7 +396,7 @@ Please contact the patient to confirm this appointment.
                   color: AppColors.whiteColor,
                 ),
                 label: Text(
-                  'Request Appointment',
+                  l10n.requestAppointment,
                   style: GoogleFonts.inter(
                     fontSize: 16,
                     fontWeight: FontWeight.w600,
@@ -412,22 +423,24 @@ Please contact the patient to confirm this appointment.
     return Column(
       children: [
         // Contact Information Card
-        _buildContactCard(),
+        _buildContactCard(context),
 
         const SizedBox(height: 24),
 
         // Office Hours Card
-        _buildOfficeHoursCard(),
+        _buildOfficeHoursCard(context),
 
         const SizedBox(height: 24),
 
         // Emergency Care Card
-        _buildEmergencyCareCard(),
+        _buildEmergencyCareCard(context),
       ],
     );
   }
 
-  Widget _buildContactCard() {
+  Widget _buildContactCard(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
+
     return Container(
       padding: const EdgeInsets.all(24),
       decoration: BoxDecoration(
@@ -446,7 +459,7 @@ Please contact the patient to confirm this appointment.
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Text(
-            'Contact Information',
+            l10n.contactInformation,
             style: GoogleFonts.poppins(
               fontSize: 20,
               fontWeight: FontWeight.bold,
@@ -456,29 +469,35 @@ Please contact the patient to confirm this appointment.
 
           const SizedBox(height: 20),
 
-          _buildContactItem(Icons.phone_outlined, 'Phone', '+1 (555) 123-4567'),
+          _buildContactItem(
+            Icons.phone_outlined,
+            l10n.phone,
+            l10n.contactPhone,
+          ),
 
           const SizedBox(height: 16),
 
           _buildContactItem(
             Icons.email_outlined,
-            'Email',
-            'info@dentalcare.com',
+            l10n.email,
+            l10n.contactEmail,
           ),
 
           const SizedBox(height: 16),
 
           _buildContactItem(
             Icons.location_on_outlined,
-            'Address',
-            '123 Dental Street\nHealthy City, HC 12345',
+            l10n.address,
+            l10n.contactAddress,
           ),
         ],
       ),
     );
   }
 
-  Widget _buildOfficeHoursCard() {
+  Widget _buildOfficeHoursCard(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
+
     return Container(
       padding: const EdgeInsets.all(24),
       decoration: BoxDecoration(
@@ -497,7 +516,7 @@ Please contact the patient to confirm this appointment.
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Text(
-            'Office Hours',
+            l10n.officeHours,
             style: GoogleFonts.poppins(
               fontSize: 20,
               fontWeight: FontWeight.bold,
@@ -507,17 +526,19 @@ Please contact the patient to confirm this appointment.
 
           const SizedBox(height: 20),
 
-          _buildOfficeHourItem('Monday - Friday', '8:00 AM - 6:00 PM'),
+          _buildOfficeHourItem(l10n.mondayFriday, l10n.mondayFridayHours),
           const SizedBox(height: 12),
-          _buildOfficeHourItem('Saturday', '9:00 AM - 4:00 PM'),
+          _buildOfficeHourItem(l10n.saturday, l10n.saturdayHours),
           const SizedBox(height: 12),
-          _buildOfficeHourItem('Sunday', 'Closed'),
+          _buildOfficeHourItem(l10n.sunday, l10n.closed),
         ],
       ),
     );
   }
 
-  Widget _buildEmergencyCareCard() {
+  Widget _buildEmergencyCareCard(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
+
     return Container(
       padding: const EdgeInsets.all(24),
       decoration: BoxDecoration(
@@ -533,14 +554,14 @@ Please contact the patient to confirm this appointment.
         children: [
           Row(
             children: [
-              Icon(
+              const Icon(
                 Icons.local_hospital_outlined,
                 color: AppColors.emergencyGreenColor,
                 size: 24,
               ),
               const SizedBox(width: 8),
               Text(
-                'Emergency Care',
+                l10n.emergencyCareTitle,
                 style: GoogleFonts.poppins(
                   fontSize: 20,
                   fontWeight: FontWeight.bold,
@@ -553,7 +574,7 @@ Please contact the patient to confirm this appointment.
           const SizedBox(height: 16),
 
           Text(
-            'We provide 24/7 emergency dental care for urgent situations. Call us immediately for dental emergencies.',
+            l10n.emergencyCareDescription,
             style: GoogleFonts.inter(
               fontSize: 14,
               color: AppColors.textPrimaryColor,
@@ -570,7 +591,7 @@ Please contact the patient to confirm this appointment.
               borderRadius: BorderRadius.circular(8),
             ),
             child: Text(
-              'Emergency: +1 (555) 999-0000',
+              l10n.emergencyContact,
               style: GoogleFonts.inter(
                 fontSize: 14,
                 fontWeight: FontWeight.w600,
@@ -692,11 +713,13 @@ Please contact the patient to confirm this appointment.
   }
 
   Widget _buildDateField(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
+
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Text(
-          'Preferred Date',
+          l10n.preferredDate,
           style: GoogleFonts.inter(
             fontSize: 14,
             fontWeight: FontWeight.w600,
@@ -718,7 +741,7 @@ Please contact the patient to confirm this appointment.
                 Text(
                   _selectedDate != null
                       ? '${_selectedDate!.day}/${_selectedDate!.month}/${_selectedDate!.year}'
-                      : 'Select date',
+                      : l10n.selectDate,
                   style: GoogleFonts.inter(
                     color: _selectedDate != null
                         ? AppColors.textPrimaryColor
@@ -818,37 +841,6 @@ Please contact the patient to confirm this appointment.
       });
     }
   }
-
-  // void _submitForm() {
-  //   if (_formKey.currentState!.validate()) {
-  //     if (_selectedDate == null) {
-  //       ScaffoldMessenger.of(
-  //         context,
-  //       ).showSnackBar(const SnackBar(content: Text('Please select a date')));
-  //       return;
-  //     }
-  //
-  //     // Handle form submission here
-  //     ScaffoldMessenger.of(context).showSnackBar(
-  //       const SnackBar(
-  //         content: Text('Appointment request submitted successfully!'),
-  //         backgroundColor: AppColors.emergencyGreenColor,
-  //       ),
-  //     );
-  //
-  //     // Reset form
-  //     _formKey.currentState!.reset();
-  //     setState(() {
-  //       _selectedService = null;
-  //       _selectedDate = null;
-  //       _selectedTime = null;
-  //     });
-  //     _fullNameController.clear();
-  //     _emailController.clear();
-  //     _phoneController.clear();
-  //     _notesController.clear();
-  //   }
-  // }
 
   double _getHorizontalPadding(BuildContext context) {
     if (Responsive.isMobile(context)) return 20;

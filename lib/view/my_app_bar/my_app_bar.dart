@@ -1,8 +1,10 @@
 import 'package:dental_one/l10n/app_localizations.dart';
 import 'package:dental_one/res/app_colors/app_colors.dart';
+import 'package:dental_one/res/provider/language_provider.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-class MyAppBar extends StatefulWidget implements PreferredSizeWidget {
+class MyAppBar extends ConsumerStatefulWidget implements PreferredSizeWidget {
   final String currentSection;
   final VoidCallback? onHomePressed;
   final VoidCallback? onAboutPressed;
@@ -21,17 +23,18 @@ class MyAppBar extends StatefulWidget implements PreferredSizeWidget {
   });
 
   @override
-  State<MyAppBar> createState() => _MyAppBarState();
+  ConsumerState<MyAppBar> createState() => _MyAppBarState();
 
   @override
   Size get preferredSize => const Size.fromHeight(80);
 }
 
-class _MyAppBarState extends State<MyAppBar> {
-  String _selectedLanguage = 'English';
-
+class _MyAppBarState extends ConsumerState<MyAppBar> {
   @override
   Widget build(BuildContext context) {
+    final currentLocale = ref.watch(languageProvider);
+    final selectedLanguage = currentLocale.languageCode == 'en' ? 'English' : 'Arabic';
+
     return Container(
       decoration: const BoxDecoration(
         color: Colors.white,
@@ -77,7 +80,7 @@ class _MyAppBarState extends State<MyAppBar> {
                 const SizedBox(width: 20),
 
                 // Language Dropdown
-                _buildLanguageDropdown(),
+                _buildLanguageDropdown(selectedLanguage),
               ] else ...[
                 // Mobile Navigation (currently commented out)
                 // Builder(
@@ -143,7 +146,7 @@ class _MyAppBarState extends State<MyAppBar> {
         ),
         child: Text(
           AppLocalizations.of(context)!.bookNow.toString(),
-          style: TextStyle(
+          style: const TextStyle(
             fontSize: 16,
             fontWeight: FontWeight.w600,
             color: Colors.white,
@@ -153,7 +156,7 @@ class _MyAppBarState extends State<MyAppBar> {
     );
   }
 
-  Widget _buildLanguageDropdown() {
+  Widget _buildLanguageDropdown(String selectedLanguage) {
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 0),
       decoration: BoxDecoration(
@@ -163,7 +166,7 @@ class _MyAppBarState extends State<MyAppBar> {
       ),
       child: DropdownButtonHideUnderline(
         child: DropdownButton<String>(
-          value: _selectedLanguage,
+          value: selectedLanguage,
           icon: const Icon(
             Icons.keyboard_arrow_down_rounded,
             color: AppColors.primaryColor,
@@ -194,14 +197,12 @@ class _MyAppBarState extends State<MyAppBar> {
           ],
           onChanged: (value) {
             if (value != null) {
-              setState(() {
-                _selectedLanguage = value;
-              });
+              final languageCode = value == 'English' ? 'en' : 'ar';
+              ref.read(languageProvider.notifier).changeLanguage(languageCode);
             }
           },
         ),
       ),
     );
   }
-
 }

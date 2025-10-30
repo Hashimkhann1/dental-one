@@ -1,3 +1,4 @@
+import 'package:dental_one/l10n/app_localizations.dart';
 import 'package:flutter/material.dart';
 
 class FooterSection extends StatelessWidget {
@@ -5,6 +6,8 @@ class FooterSection extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
+
     return Container(
       width: double.infinity,
       color: const Color(0xFF2D3748), // Dark blue-gray background
@@ -22,13 +25,13 @@ class FooterSection extends StatelessWidget {
                   return Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      _buildDentalCareSection(),
+                      _buildDentalCareSection(l10n),
                       const SizedBox(height: 32),
-                      _buildQuickLinksSection(),
+                      _buildQuickLinksSection(l10n),
                       const SizedBox(height: 32),
-                      _buildServicesSection(),
+                      _buildServicesSection(l10n),
                       const SizedBox(height: 32),
-                      _buildContactInfoSection(),
+                      _buildContactInfoSection(l10n),
                     ],
                   );
                 } else {
@@ -37,13 +40,13 @@ class FooterSection extends StatelessWidget {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
-                      Expanded(flex: 3, child: _buildDentalCareSection()),
+                      Expanded(flex: 3, child: _buildDentalCareSection(l10n)),
                       const SizedBox(width: 48),
-                      Expanded(flex: 2, child: _buildQuickLinksSection()),
+                      Expanded(flex: 2, child: _buildQuickLinksSection(l10n)),
                       const SizedBox(width: 48),
-                      Expanded(flex: 2, child: _buildServicesSection()),
+                      Expanded(flex: 2, child: _buildServicesSection(l10n)),
                       const SizedBox(width: 48),
-                      Expanded(flex: 3, child: _buildContactInfoSection()),
+                      Expanded(flex: 3, child: _buildContactInfoSection(l10n)),
                     ],
                   );
                 }
@@ -69,7 +72,7 @@ class FooterSection extends StatelessWidget {
                   return Column(
                     children: [
                       Text(
-                        '© 2025 DentalCare Clinic. All rights reserved.',
+                        l10n.footerCopyright,
                         style: TextStyle(
                           color: Colors.grey[400],
                           fontSize: 14,
@@ -81,9 +84,9 @@ class FooterSection extends StatelessWidget {
                         alignment: WrapAlignment.center,
                         spacing: 24,
                         children: [
-                          _buildFooterLink('Privacy Policy'),
-                          _buildFooterLink('Terms of Service'),
-                          _buildFooterLink('Cookie Policy'),
+                          _buildFooterLink(l10n.footerPrivacyPolicy),
+                          _buildFooterLink(l10n.footerTermsOfService),
+                          _buildFooterLink(l10n.footerCookiePolicy),
                         ],
                       ),
                     ],
@@ -93,7 +96,7 @@ class FooterSection extends StatelessWidget {
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
                       Text(
-                        '© 2025 DentalCare Clinic. All rights reserved.',
+                        l10n.footerCopyright,
                         style: TextStyle(
                           color: Colors.grey[400],
                           fontSize: 14,
@@ -101,11 +104,11 @@ class FooterSection extends StatelessWidget {
                       ),
                       Row(
                         children: [
-                          _buildFooterLink('Privacy Policy'),
+                          _buildFooterLink(l10n.footerPrivacyPolicy),
                           const SizedBox(width: 24),
-                          _buildFooterLink('Terms of Service'),
+                          _buildFooterLink(l10n.footerTermsOfService),
                           const SizedBox(width: 24),
-                          _buildFooterLink('Cookie Policy'),
+                          _buildFooterLink(l10n.footerCookiePolicy),
                         ],
                       ),
                     ],
@@ -119,13 +122,13 @@ class FooterSection extends StatelessWidget {
     );
   }
 
-  Widget _buildDentalCareSection() {
+  Widget _buildDentalCareSection(AppLocalizations l10n) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        const Text(
-          'DentalCare',
-          style: TextStyle(
+        Text(
+          l10n.footerDentalCareTitle,
+          style: const TextStyle(
             color: Colors.white,
             fontSize: 24,
             fontWeight: FontWeight.bold,
@@ -133,7 +136,7 @@ class FooterSection extends StatelessWidget {
         ),
         const SizedBox(height: 16),
         Text(
-          'Providing exceptional dental care with a focus on patient comfort, advanced technology, and personalized treatment plans.',
+          l10n.footerDentalCareDescription,
           style: TextStyle(
             color: Colors.grey[300],
             fontSize: 16,
@@ -144,70 +147,70 @@ class FooterSection extends StatelessWidget {
     );
   }
 
-  Widget _buildQuickLinksSection() {
+  Widget _buildQuickLinksSection(AppLocalizations l10n) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        const Text(
-          'Quick Links',
-          style: TextStyle(
+        Text(
+          l10n.footerQuickLinks,
+          style: const TextStyle(
             color: Colors.white,
             fontSize: 20,
             fontWeight: FontWeight.w600,
           ),
         ),
         const SizedBox(height: 16),
-        _buildLinkItem('Home'),
-        _buildLinkItem('About Us'),
-        _buildLinkItem('Services'),
-        _buildLinkItem('Our Experts'),
+        _buildLinkItem(l10n.home),
+        _buildLinkItem(l10n.aboutUs),
+        _buildLinkItem(l10n.services),
+        _buildLinkItem(l10n.ourExperts),
       ],
     );
   }
 
-  Widget _buildServicesSection() {
+  Widget _buildServicesSection(AppLocalizations l10n) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        const Text(
-          'Services',
-          style: TextStyle(
+        Text(
+          l10n.services,
+          style: const TextStyle(
             color: Colors.white,
             fontSize: 20,
             fontWeight: FontWeight.w600,
           ),
         ),
         const SizedBox(height: 16),
-        _buildLinkItem('General Dentistry'),
-        _buildLinkItem('Cosmetic Dentistry'),
-        _buildLinkItem('Orthodontics'),
-        _buildLinkItem('Emergency Care'),
-        _buildLinkItem('Oral Surgery'),
-        _buildLinkItem('Pediatric Dentistry'),
+        _buildLinkItem(l10n.serviceGeneralTitle),
+        _buildLinkItem(l10n.serviceCosmeticTitle),
+        _buildLinkItem(l10n.serviceOrthoTitle),
+        _buildLinkItem(l10n.serviceEmergencyTitle),
+        _buildLinkItem(l10n.serviceSurgeryTitle),
+        _buildLinkItem(l10n.servicePediatricTitle),
       ],
     );
   }
 
-  Widget _buildContactInfoSection() {
+  Widget _buildContactInfoSection(AppLocalizations l10n) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        const Text(
-          'Contact Info',
-          style: TextStyle(
+        Text(
+          l10n.contactInformation,
+          style: const TextStyle(
             color: Colors.white,
             fontSize: 20,
             fontWeight: FontWeight.w600,
           ),
         ),
         const SizedBox(height: 16),
-        _buildContactItem(Icons.phone, '(555) 123-4567'),
+        _buildContactItem(Icons.phone, l10n.contactPhone),
         const SizedBox(height: 12),
-        _buildContactItem(Icons.email, 'info@dentalcareclinic.com'),
+        _buildContactItem(Icons.email, l10n.contactEmail),
         const SizedBox(height: 12),
-        _buildContactItem(Icons.location_on, '123 Healthcare Drive\nMedical District, CA 90210'),
+        _buildContactItem(Icons.location_on, l10n.contactAddress),
         const SizedBox(height: 12),
-        _buildContactItem(Icons.access_time, 'Mon-Fri: 8AM-6PM\nSat: 9AM-3PM\nSun: Emergency Only'),
+        _buildContactItem(Icons.access_time, l10n.footerOfficeHours),
       ],
     );
   }

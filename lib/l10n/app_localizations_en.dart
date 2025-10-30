@@ -27,7 +27,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get bookNow => 'Book Now';
 
   @override
-  String get homeHeadingSmile => 'Your Smile is Our ';
+  String get homeHeadingSmile => 'Your Smile is Our';
 
   @override
   String get homeHeadingPriority => 'Priority';
@@ -45,13 +45,13 @@ class AppLocalizationsEn extends AppLocalizations {
   String get safeCare => 'Safe Care';
 
   @override
-  String get latestProtocols => 'Latest\nprotocols';
+  String get latestProtocols => 'Latest\nProtocols';
 
   @override
   String get expertTeam => 'Expert Team';
 
   @override
-  String get certifiedProfessionals => 'Certified\nprofessionals';
+  String get certifiedProfessionals => 'Certified\nProfessionals';
 
   @override
   String get fivek => '5000+';
@@ -63,19 +63,19 @@ class AppLocalizationsEn extends AppLocalizations {
   String get thenPlus => '10+';
 
   @override
-  String get yearExperience => 'Years Experience';
+  String get yearExperience => 'Years of Experience';
 
   @override
   String get aboutTitle => 'About DentalCare Clinic';
 
   @override
-  String get aboutDescription => 'For over a decade, DentalCare Clinic has been committed to providing exceptional dental care to our community. We combine advanced technology with a gentle, personalized approach to ensure every patient receives the best possible treatment in a comfortable and welcoming environment.';
+  String get aboutDescription => 'For over a decade, DentalCare Clinic has been committed to providing exceptional dental care to our community. We combine advanced technology with a gentle, personalized approach to ensure every patient receives the best possible treatment in a comfortable, welcoming environment.';
 
   @override
   String get featurePatientCareTitle => 'Patient-Centered Care';
 
   @override
-  String get featurePatientCareSubtitle => 'We prioritize your comfort and well-being in every treatment decision.';
+  String get featurePatientCareSubtitle => 'We prioritize your comfort and safety in every treatment decision.';
 
   @override
   String get featureExcellenceTitle => 'Excellence in Dentistry';
@@ -90,16 +90,16 @@ class AppLocalizationsEn extends AppLocalizations {
   String get featureExperiencedTeamSubtitle => 'Our dentists have decades of combined experience in dental care.';
 
   @override
-  String get featureSchedulingTitle => 'Convenient Scheduling';
+  String get featureSchedulingTitle => 'Flexible Scheduling';
 
   @override
-  String get featureSchedulingSubtitle => 'Flexible hours and easy online booking to fit your busy lifestyle.';
+  String get featureSchedulingSubtitle => 'Convenient hours and easy online booking to fit your busy lifestyle.';
 
   @override
   String get missionTitle => 'Our Mission';
 
   @override
-  String get missionDescription => 'We believe that everyone deserves access to high-quality dental care. Our mission is to provide comprehensive, compassionate, and affordable dental services while educating our patients about optimal oral health practices.';
+  String get missionDescription => 'We believe everyone deserves access to quality dental care. Our mission is to provide comprehensive, compassionate, and affordable dental services while educating our patients about optimal oral health practices.';
 
   @override
   String get missionPoint1 => 'Comprehensive dental services';
@@ -132,7 +132,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get serviceGeneralTitle => 'General Dentistry';
 
   @override
-  String get serviceGeneralDescription => 'Complete oral care with cleanings, fillings, and preventive treatments.';
+  String get serviceGeneralDescription => 'Comprehensive oral care including cleanings, fillings, and preventive treatments.';
 
   @override
   String get serviceGeneralFeature1 => 'Regular Cleanings';
@@ -141,7 +141,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get serviceGeneralFeature2 => 'Cavity Fillings';
 
   @override
-  String get serviceGeneralFeature3 => 'Oral Exams';
+  String get serviceGeneralFeature3 => 'Oral Examinations';
 
   @override
   String get serviceGeneralFeature4 => 'Fluoride Treatments';
@@ -150,7 +150,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get serviceCosmeticTitle => 'Cosmetic Dentistry';
 
   @override
-  String get serviceCosmeticDescription => 'Enhance your smile with our advanced cosmetic dental procedures.';
+  String get serviceCosmeticDescription => 'Enhance your smile with our advanced cosmetic dentistry procedures.';
 
   @override
   String get serviceCosmeticFeature1 => 'Teeth Whitening';
@@ -162,7 +162,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get serviceCosmeticFeature3 => 'Bonding';
 
   @override
-  String get serviceCosmeticFeature4 => 'Smile Makeovers';
+  String get serviceCosmeticFeature4 => 'Smile Makeover';
 
   @override
   String get serviceOrthoTitle => 'Orthodontics';
@@ -186,7 +186,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get serviceEmergencyTitle => 'Emergency Care';
 
   @override
-  String get serviceEmergencyDescription => 'Immediate dental care for urgent situations and dental emergencies.';
+  String get serviceEmergencyDescription => 'Immediate care for urgent and emergency dental situations.';
 
   @override
   String get serviceEmergencyFeature1 => '24/7 Availability';
@@ -195,7 +195,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get serviceEmergencyFeature2 => 'Pain Relief';
 
   @override
-  String get serviceEmergencyFeature3 => 'Urgent Repairs';
+  String get serviceEmergencyFeature3 => 'Emergency Repairs';
 
   @override
   String get serviceEmergencyFeature4 => 'Same-Day Treatment';
@@ -204,7 +204,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get serviceSurgeryTitle => 'Oral Surgery';
 
   @override
-  String get serviceSurgeryDescription => 'Expert surgical procedures performed with precision and care.';
+  String get serviceSurgeryDescription => 'Precise surgical procedures performed by specialized dentists with utmost care.';
 
   @override
   String get serviceSurgeryFeature1 => 'Tooth Extractions';
@@ -222,7 +222,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get servicePediatricTitle => 'Pediatric Dentistry';
 
   @override
-  String get servicePediatricDescription => 'Specialized dental care designed specifically for children and teens.';
+  String get servicePediatricDescription => 'Specialized dental care for children and adolescents.';
 
   @override
   String get servicePediatricFeature1 => 'Kid-Friendly Environment';
@@ -237,10 +237,10 @@ class AppLocalizationsEn extends AppLocalizations {
   String get servicePediatricFeature4 => 'Education';
 
   @override
-  String get footerTitle => 'Don\'t See What You Need?';
+  String get footerTitle => 'Don\'t see what you\'re looking for?';
 
   @override
-  String get footerDescription => 'We offer many additional specialized services. Contact us to discuss your specific dental needs and we\'ll be happy to help you find the right treatment plan.';
+  String get footerDescription => 'We offer many additional specialized services. Contact us to discuss your specific needs and we\'ll help you find the right treatment plan.';
 
   @override
   String get footerButton => 'Contact Us Today';
@@ -252,19 +252,19 @@ class AppLocalizationsEn extends AppLocalizations {
   String get expertTeamTitle => 'Meet Our Expert Team';
 
   @override
-  String get expertTeamDescription => 'Our team of experienced dental professionals is dedicated to providing you with the highest quality care. Each member brings unique expertise and a shared commitment to your oral health and comfort.';
+  String get expertTeamDescription => 'Our team of experienced professionals is dedicated to providing the highest level of care. Each member brings unique expertise and a shared commitment to your oral health and comfort.';
 
   @override
   String get drSarahJohnson => 'Dr. Sarah Johnson';
 
   @override
-  String get drSarahRole => 'Lead Dentist & Clinic Director';
+  String get drSarahRole => 'Lead Dentist & Practice Director';
 
   @override
-  String get drSarahExperience => '15+ years';
+  String get drSarahExperience => '15+ Years';
 
   @override
-  String get drSarahDescription => 'Dr. Johnson is passionate about creating healthy, beautiful smiles with advanced dental care.';
+  String get drSarahDescription => 'Dr. Johnson is passionate about creating healthy, beautiful smiles using the latest dental technology.';
 
   @override
   String get drSarahEducation => 'DDS, Harvard School of Dental Medicine';
@@ -279,13 +279,13 @@ class AppLocalizationsEn extends AppLocalizations {
   String get drMichaelChen => 'Dr. Michael Chen';
 
   @override
-  String get drMichaelRole => 'Orthodontist & Oral Surgeon';
+  String get drMichaelRole => 'Orthodontist & Oral Surgery Specialist';
 
   @override
-  String get drMichaelExperience => '12+ years';
+  String get drMichaelExperience => '12+ Years';
 
   @override
-  String get drMichaelDescription => 'Specializing in orthodontics and oral surgery, Dr. Chen combines precision with patient comfort in every procedure.';
+  String get drMichaelDescription => 'Dr. Chen specializes in orthodontics and oral surgery, combining precision with patient comfort in every procedure.';
 
   @override
   String get drMichaelEducation => 'DDS, University of Pennsylvania';
@@ -297,7 +297,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get drMichaelExpertise2 => 'Oral Surgery';
 
   @override
-  String get drMichaelExpertise3 => 'Implant Dentistry';
+  String get drMichaelExpertise3 => 'Dental Implants';
 
   @override
   String get drEmilyRodriguez => 'Dr. Emily Rodriguez';
@@ -306,10 +306,10 @@ class AppLocalizationsEn extends AppLocalizations {
   String get drEmilyRole => 'Pediatric Dentist';
 
   @override
-  String get drEmilyExperience => '8+ years';
+  String get drEmilyExperience => '8+ Years';
 
   @override
-  String get drEmilyDescription => 'Dr. Rodriguez creates a fun, comfortable environment for children while providing exceptional pediatric dental care.';
+  String get drEmilyDescription => 'Dr. Rodriguez provides a fun, comfortable environment for children while delivering exceptional pediatric dental care.';
 
   @override
   String get drEmilyEducation => 'DDS, UCLA School of Dentistry';
@@ -327,17 +327,239 @@ class AppLocalizationsEn extends AppLocalizations {
   String get whyChooseBoardCertifiedTitle => 'Board Certified';
 
   @override
-  String get whyChooseBoardCertifiedDescription => 'All our dentists are board certified and maintain continuing education';
+  String get whyChooseBoardCertifiedDescription => 'All our dentists are board-certified and maintain continuing education.';
 
   @override
   String get whyChooseTrainingTitle => 'Extensive Training';
 
   @override
-  String get whyChooseTrainingDescription => 'Graduates from top dental schools with specialized training';
+  String get whyChooseTrainingDescription => 'Graduates of top dental schools with specialized training.';
 
   @override
   String get whyChooseLocalTitle => 'Local Expertise';
 
   @override
-  String get whyChooseLocalDescription => 'Deep understanding of community dental health needs';
+  String get whyChooseLocalDescription => 'Deep understanding of community dental health needs.';
+
+  @override
+  String get bookYourAppointment => 'Book Your Appointment';
+
+  @override
+  String get bookAppointmentDescription => 'Schedule your dental appointment with our team of experts. We offer flexible scheduling and comprehensive dental services to meet all your oral health needs.';
+
+  @override
+  String get scheduleYourVisit => 'Schedule Your Visit';
+
+  @override
+  String get fullName => 'Full Name';
+
+  @override
+  String get enterFullName => 'Enter your full name';
+
+  @override
+  String get pleaseEnterFullName => 'Please enter your full name';
+
+  @override
+  String get emailAddress => 'Email Address';
+
+  @override
+  String get enterEmail => 'Enter your email';
+
+  @override
+  String get pleaseEnterEmail => 'Please enter your email';
+
+  @override
+  String get pleaseEnterValidEmail => 'Please enter a valid email';
+
+  @override
+  String get phoneNumber => 'Phone Number';
+
+  @override
+  String get enterPhoneNumber => 'Enter your phone number';
+
+  @override
+  String get pleaseEnterPhoneNumber => 'Please enter your phone number';
+
+  @override
+  String get serviceNeeded => 'Service Needed';
+
+  @override
+  String get selectService => 'Select a service';
+
+  @override
+  String get pleaseSelectService => 'Please select a service';
+
+  @override
+  String get serviceGeneralCheckup => 'General Checkup';
+
+  @override
+  String get serviceTeethCleaning => 'Teeth Cleaning';
+
+  @override
+  String get serviceCosmeticDentistry => 'Cosmetic Dentistry';
+
+  @override
+  String get serviceOrthodontics => 'Orthodontics';
+
+  @override
+  String get serviceOralSurgery => 'Oral Surgery';
+
+  @override
+  String get serviceEmergencyCare => 'Emergency Care';
+
+  @override
+  String get preferredDate => 'Preferred Date';
+
+  @override
+  String get selectDate => 'Select a date';
+
+  @override
+  String get pleaseSelectDate => 'Please select a date';
+
+  @override
+  String get preferredTime => 'Preferred Time';
+
+  @override
+  String get selectTime => 'Select a time';
+
+  @override
+  String get pleaseSelectTime => 'Please select a time';
+
+  @override
+  String get timeSlot9am => '9:00 AM';
+
+  @override
+  String get timeSlot10am => '10:00 AM';
+
+  @override
+  String get timeSlot11am => '11:00 AM';
+
+  @override
+  String get timeSlot2pm => '2:00 PM';
+
+  @override
+  String get timeSlot3pm => '3:00 PM';
+
+  @override
+  String get timeSlot4pm => '4:00 PM';
+
+  @override
+  String get timeSlot5pm => '5:00 PM';
+
+  @override
+  String get additionalNotes => 'Additional Notes';
+
+  @override
+  String get additionalNotesHint => 'Any specific concerns or requests...';
+
+  @override
+  String get requestAppointment => 'Request Appointment';
+
+  @override
+  String get sendingAppointmentRequest => 'Sending appointment request...';
+
+  @override
+  String get appointmentSuccessMessage => 'Your appointment request has been sent successfully! Our team will contact you soon to confirm.';
+
+  @override
+  String get appointmentFailedMessage => 'Failed to send appointment request. Please try again.';
+
+  @override
+  String get emailConfigError => 'Email service configuration error. Please contact support.';
+
+  @override
+  String get networkError => 'Network error. Please check your connection and try again.';
+
+  @override
+  String get newAppointmentRequestSubject => '🦷 New Dental Appointment Request';
+
+  @override
+  String get contactInformation => 'Contact Information';
+
+  @override
+  String get phone => 'Phone';
+
+  @override
+  String get email => 'Email';
+
+  @override
+  String get address => 'Address';
+
+  @override
+  String get contactPhone => '+1 (555) 123-4567';
+
+  @override
+  String get contactEmail => 'info@dentalcare.com';
+
+  @override
+  String get contactAddress => '123 Dental Street\nHealthy City, HC 12345';
+
+  @override
+  String get officeHours => 'Office Hours';
+
+  @override
+  String get mondayFriday => 'Monday - Friday';
+
+  @override
+  String get mondayFridayHours => '8:00 AM - 6:00 PM';
+
+  @override
+  String get saturday => 'Saturday';
+
+  @override
+  String get saturdayHours => '9:00 AM - 4:00 PM';
+
+  @override
+  String get sunday => 'Sunday';
+
+  @override
+  String get closed => 'Closed';
+
+  @override
+  String get emergencyCareTitle => 'Emergency Care';
+
+  @override
+  String get emergencyCareDescription => 'We offer 24/7 emergency dental care for urgent situations. Call us immediately in case of dental emergencies.';
+
+  @override
+  String get emergencyContact => 'Emergency: +1 (555) 999-0000';
+
+  @override
+  String get visitOurClinic => 'Visit Our Clinic';
+
+  @override
+  String get visitClinicDescription => 'Find us easily at our convenient location. We\'re here to serve you with exceptional dental care.';
+
+  @override
+  String get clinicLocation => 'Clinic Location';
+
+  @override
+  String get getDirections => 'Get Directions';
+
+  @override
+  String get callClinic => 'Call Clinic';
+
+  @override
+  String get footerDentalCareTitle => 'DentalCare';
+
+  @override
+  String get footerDentalCareDescription => 'Providing exceptional dental care with a focus on patient comfort, advanced technology, and personalized treatment plans.';
+
+  @override
+  String get footerQuickLinks => 'Quick Links';
+
+  @override
+  String get footerOfficeHours => 'Mon-Fri: 8AM-6PM\nSat: 9AM-3PM\nSun: Emergency Only';
+
+  @override
+  String get footerCopyright => '© 2025 DentalCare Clinic. All rights reserved.';
+
+  @override
+  String get footerPrivacyPolicy => 'Privacy Policy';
+
+  @override
+  String get footerTermsOfService => 'Terms of Service';
+
+  @override
+  String get footerCookiePolicy => 'Cookie Policy';
 }

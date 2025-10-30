@@ -51,7 +51,7 @@ class AppLocalizationsAr extends AppLocalizations {
   String get expertTeam => 'فريق الخبراء';
 
   @override
-  String get certifiedProfessionals => 'محترفون\nمعتمدو';
+  String get certifiedProfessionals => 'محترفون\nمعتمدون';
 
   @override
   String get fivek => '٥٠٠٠+';
@@ -340,4 +340,226 @@ class AppLocalizationsAr extends AppLocalizations {
 
   @override
   String get whyChooseLocalDescription => 'فهم عميق لاحتياجات صحة الأسنان في المجتمع.';
+
+  @override
+  String get bookYourAppointment => 'احجز موعدك';
+
+  @override
+  String get bookAppointmentDescription => 'حدد موعد أسنانك مع فريقنا من الخبراء. نقدم جدولة مرنة وخدمات أسنان شاملة لتلبية جميع احتياجات صحة فمك.';
+
+  @override
+  String get scheduleYourVisit => 'حدد موعد زيارتك';
+
+  @override
+  String get fullName => 'الاسم الكامل';
+
+  @override
+  String get enterFullName => 'أدخل اسمك الكامل';
+
+  @override
+  String get pleaseEnterFullName => 'يرجى إدخال اسمك الكامل';
+
+  @override
+  String get emailAddress => 'عنوان البريد الإلكتروني';
+
+  @override
+  String get enterEmail => 'أدخل بريدك الإلكتروني';
+
+  @override
+  String get pleaseEnterEmail => 'يرجى إدخال بريدك الإلكتروني';
+
+  @override
+  String get pleaseEnterValidEmail => 'يرجى إدخال بريد إلكتروني صالح';
+
+  @override
+  String get phoneNumber => 'رقم الهاتف';
+
+  @override
+  String get enterPhoneNumber => 'أدخل رقم هاتفك';
+
+  @override
+  String get pleaseEnterPhoneNumber => 'يرجى إدخال رقم هاتفك';
+
+  @override
+  String get serviceNeeded => 'الخدمة المطلوبة';
+
+  @override
+  String get selectService => 'اختر خدمة';
+
+  @override
+  String get pleaseSelectService => 'يرجى اختيار خدمة';
+
+  @override
+  String get serviceGeneralCheckup => 'فحص عام';
+
+  @override
+  String get serviceTeethCleaning => 'تنظيف الأسنان';
+
+  @override
+  String get serviceCosmeticDentistry => 'طب الأسنان التجميلي';
+
+  @override
+  String get serviceOrthodontics => 'تقويم الأسنان';
+
+  @override
+  String get serviceOralSurgery => 'جراحة الفم';
+
+  @override
+  String get serviceEmergencyCare => 'الرعاية الطارئة';
+
+  @override
+  String get preferredDate => 'التاريخ المفضل';
+
+  @override
+  String get selectDate => 'اختر التاريخ';
+
+  @override
+  String get pleaseSelectDate => 'يرجى اختيار تاريخ';
+
+  @override
+  String get preferredTime => 'الوقت المفضل';
+
+  @override
+  String get selectTime => 'اختر الوقت';
+
+  @override
+  String get pleaseSelectTime => 'يرجى اختيار الوقت';
+
+  @override
+  String get timeSlot9am => '9:00 صباحاً';
+
+  @override
+  String get timeSlot10am => '10:00 صباحاً';
+
+  @override
+  String get timeSlot11am => '11:00 صباحاً';
+
+  @override
+  String get timeSlot2pm => '2:00 مساءً';
+
+  @override
+  String get timeSlot3pm => '3:00 مساءً';
+
+  @override
+  String get timeSlot4pm => '4:00 مساءً';
+
+  @override
+  String get timeSlot5pm => '5:00 مساءً';
+
+  @override
+  String get additionalNotes => 'ملاحظات إضافية';
+
+  @override
+  String get additionalNotesHint => 'أي مخاوف أو طلبات محددة...';
+
+  @override
+  String get requestAppointment => 'طلب موعد';
+
+  @override
+  String get sendingAppointmentRequest => 'جاري إرسال طلب الموعد...';
+
+  @override
+  String get appointmentSuccessMessage => 'تم إرسال طلب موعدك بنجاح! سيتصل بك فريقنا قريباً للتأكيد.';
+
+  @override
+  String get appointmentFailedMessage => 'فشل إرسال طلب الموعد. يرجى المحاولة مرة أخرى.';
+
+  @override
+  String get emailConfigError => 'خطأ في إعداد خدمة البريد الإلكتروني. يرجى الاتصال بالدعم.';
+
+  @override
+  String get networkError => 'خطأ في الشبكة. يرجى التحقق من اتصالك والمحاولة مرة أخرى.';
+
+  @override
+  String get newAppointmentRequestSubject => '🦷 طلب موعد أسنان جديد';
+
+  @override
+  String get contactInformation => 'معلومات الاتصال';
+
+  @override
+  String get phone => 'الهاتف';
+
+  @override
+  String get email => 'البريد الإلكتروني';
+
+  @override
+  String get address => 'العنوان';
+
+  @override
+  String get contactPhone => '4567-123 (555) 1+';
+
+  @override
+  String get contactEmail => 'info@dentalcare.com';
+
+  @override
+  String get contactAddress => '123 شارع الأسنان\nمدينة صحية، HC 12345';
+
+  @override
+  String get officeHours => 'ساعات العمل';
+
+  @override
+  String get mondayFriday => 'الإثنين - الجمعة';
+
+  @override
+  String get mondayFridayHours => '8:00 صباحاً - 6:00 مساءً';
+
+  @override
+  String get saturday => 'السبت';
+
+  @override
+  String get saturdayHours => '9:00 صباحاً - 4:00 مساءً';
+
+  @override
+  String get sunday => 'الأحد';
+
+  @override
+  String get closed => 'مغلق';
+
+  @override
+  String get emergencyCareTitle => 'الرعاية الطارئة';
+
+  @override
+  String get emergencyCareDescription => 'نقدم رعاية أسنان طارئة على مدار الساعة طوال أيام الأسبوع للحالات العاجلة. اتصل بنا فوراً في حالات طوارئ الأسنان.';
+
+  @override
+  String get emergencyContact => 'الطوارئ: 0000-999 (555) 1+';
+
+  @override
+  String get visitOurClinic => 'زُر عيادتنا';
+
+  @override
+  String get visitClinicDescription => 'اعثر علينا بسهولة في موقعنا المناسب. نحن هنا لخدمتك برعاية أسنان استثنائية.';
+
+  @override
+  String get clinicLocation => 'موقع العيادة';
+
+  @override
+  String get getDirections => 'احصل على الاتجاهات';
+
+  @override
+  String get callClinic => 'اتصل بالعيادة';
+
+  @override
+  String get footerDentalCareTitle => 'دنتال كير';
+
+  @override
+  String get footerDentalCareDescription => 'نقدم رعاية أسنان استثنائية مع التركيز على راحة المريض والتكنولوجيا المتقدمة وخطط العلاج الشخصية.';
+
+  @override
+  String get footerQuickLinks => 'روابط سريعة';
+
+  @override
+  String get footerOfficeHours => 'الإثنين-الجمعة: 8 ص - 6 م\nالسبت: 9 ص - 3 م\nالأحد: طوارئ فقط';
+
+  @override
+  String get footerCopyright => '© 2025 عيادة دنتال كير. جميع الحقوق محفوظة.';
+
+  @override
+  String get footerPrivacyPolicy => 'سياسة الخصوصية';
+
+  @override
+  String get footerTermsOfService => 'شروط الخدمة';
+
+  @override
+  String get footerCookiePolicy => 'سياسة ملفات تعريف الارتباط';
 }

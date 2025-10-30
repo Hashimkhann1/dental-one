@@ -1,5 +1,6 @@
 import 'package:dental_one/firebase_options.dart';
 import 'package:dental_one/l10n/app_localizations.dart';
+import 'package:dental_one/res/provider/language_provider.dart';
 import 'package:dental_one/view/all_sections/all_sections.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
@@ -14,22 +15,23 @@ void main() async {
   runApp(const ProviderScope(child: MyApp()));
 }
 
-class MyApp extends StatelessWidget {
+class MyApp extends ConsumerWidget {
   const MyApp({super.key});
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
+    final locale = ref.watch(languageProvider);
+
     return MaterialApp(
       title: 'DentalCare',
-      locale: Locale('ar'),
-      localizationsDelegates: [
+      locale: locale,
+      localizationsDelegates: const [
         AppLocalizations.delegate,
         GlobalWidgetsLocalizations.delegate,
         GlobalMaterialLocalizations.delegate,
         GlobalCupertinoLocalizations.delegate,
-
       ],
-      supportedLocales: [
+      supportedLocales: const [
         Locale('en'),
         Locale('ar')
       ],
@@ -62,7 +64,16 @@ class MyApp extends StatelessWidget {
           ),
         ),
       ),
-      home: const AllSections(),
+      // Add this builder to properly handle RTL
+      builder: (context, child) {
+        return Directionality(
+          textDirection: locale?.languageCode == 'ar'
+              ? TextDirection.rtl
+              : TextDirection.ltr,
+          child: child!,
+        );
+      },
+      home: AllSections(),
     );
   }
 }
