@@ -1,8 +1,19 @@
 import 'package:dental_one/l10n/app_localizations.dart';
 import 'package:flutter/material.dart';
+import 'package:url_launcher/url_launcher.dart';
+import 'package:font_awesome_flutter/font_awesome_flutter.dart'; // Add this in pubspec.yaml
 
 class FooterSection extends StatelessWidget {
   const FooterSection({Key? key}) : super(key: key);
+
+  Future<void> _launchURL(String url) async {
+    final uri = Uri.parse(url);
+    if (await canLaunchUrl(uri)) {
+      await launchUrl(uri, mode: LaunchMode.externalApplication);
+    } else {
+      debugPrint('Could not launch $url');
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -10,10 +21,10 @@ class FooterSection extends StatelessWidget {
 
     return Container(
       width: double.infinity,
-      color: const Color(0xFF2D3748), // Dark blue-gray background
+      color: const Color(0xFF2D3748), // Dark background
       child: Column(
         children: [
-          // Main footer content
+          // ✅ Main footer content
           Padding(
             padding: const EdgeInsets.symmetric(horizontal: 24.0, vertical: 48.0),
             child: LayoutBuilder(
@@ -21,11 +32,13 @@ class FooterSection extends StatelessWidget {
                 bool isMobile = constraints.maxWidth < 768;
 
                 if (isMobile) {
-                  // Mobile layout - stacked vertically
+                  // Mobile layout
                   return Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       _buildDentalCareSection(l10n),
+                      const SizedBox(height: 32),
+                      _buildSocialMediaSection(), // ✅ Add here
                       const SizedBox(height: 32),
                       _buildQuickLinksSection(l10n),
                       const SizedBox(height: 32),
@@ -35,7 +48,7 @@ class FooterSection extends StatelessWidget {
                     ],
                   );
                 } else {
-                  // Desktop layout - four columns
+                  // Desktop layout
                   return Row(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     mainAxisAlignment: MainAxisAlignment.center,
@@ -47,6 +60,8 @@ class FooterSection extends StatelessWidget {
                       Expanded(flex: 2, child: _buildServicesSection(l10n)),
                       const SizedBox(width: 48),
                       Expanded(flex: 3, child: _buildContactInfoSection(l10n)),
+                      const SizedBox(width: 48),
+                      Expanded(flex: 2, child: _buildSocialMediaSection()), // ✅ Add here
                     ],
                   );
                 }
@@ -61,7 +76,7 @@ class FooterSection extends StatelessWidget {
             margin: const EdgeInsets.symmetric(horizontal: 24.0),
           ),
 
-          // Bottom copyright section
+          // ✅ Bottom copyright section
           Padding(
             padding: const EdgeInsets.all(24.0),
             child: LayoutBuilder(
@@ -121,6 +136,10 @@ class FooterSection extends StatelessWidget {
       ),
     );
   }
+
+  // --------------------------------------------------------------------------
+  // 🔹 Footer sections
+  // --------------------------------------------------------------------------
 
   Widget _buildDentalCareSection(AppLocalizations l10n) {
     return Column(
@@ -215,13 +234,86 @@ class FooterSection extends StatelessWidget {
     );
   }
 
+  // --------------------------------------------------------------------------
+  // 🔹 New Social Media Section
+  // --------------------------------------------------------------------------
+
+  Widget _buildSocialMediaSection() {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        const Text(
+          "Follow Us",
+          style: TextStyle(
+            color: Colors.white,
+            fontSize: 20,
+            fontWeight: FontWeight.w600,
+          ),
+        ),
+        const SizedBox(height: 16),
+        Wrap(
+          spacing: 16,
+          runSpacing: 16,
+          children: [
+            _buildSocialIcon(
+              icon: FontAwesomeIcons.whatsapp,
+              color: Colors.green,
+              onTap: () => _launchURL('https://wa.me/923235200735'),
+            ),
+            _buildSocialIcon(
+              icon: FontAwesomeIcons.instagram,
+              color: Colors.pinkAccent,
+              onTap: () => _launchURL('https://www.instagram.com/hashimkhan5806/'),
+            ),
+            _buildSocialIcon(
+              icon: FontAwesomeIcons.facebookF,
+              color: Colors.blueAccent,
+              onTap: () => _launchURL('https://www.facebook.com/profile.php?id=100011393307548'),
+            ),
+            _buildSocialIcon(
+              icon: FontAwesomeIcons.linkedinIn,
+              color: Colors.blue,
+              onTap: () => _launchURL('https://www.linkedin.com/in/themuhammad-hashim/'),
+            ),
+            _buildSocialIcon(
+              icon: FontAwesomeIcons.tiktok,
+              color: Colors.white,
+              onTap: () => _launchURL('https://www.tiktok.com/@uuhmk?_r=1&_t=ZS-9107VllYgsP'),
+            ),
+          ],
+        ),
+      ],
+    );
+  }
+
+  Widget _buildSocialIcon({
+    required IconData icon,
+    required Color color,
+    required VoidCallback onTap,
+  }) {
+    return InkWell(
+      onTap: onTap,
+      borderRadius: BorderRadius.circular(50),
+      child: Container(
+        padding: const EdgeInsets.all(10),
+        decoration: BoxDecoration(
+          color: color.withOpacity(0.15),
+          borderRadius: BorderRadius.circular(50),
+        ),
+        child: FaIcon(icon, color: color, size: 22),
+      ),
+    );
+  }
+
+  // --------------------------------------------------------------------------
+  // 🔹 Helper Widgets
+  // --------------------------------------------------------------------------
+
   Widget _buildLinkItem(String text) {
     return Padding(
       padding: const EdgeInsets.only(bottom: 8.0),
       child: InkWell(
-        onTap: () {
-          // Handle link tap
-        },
+        onTap: () {},
         child: Text(
           text,
           style: TextStyle(
@@ -238,11 +330,7 @@ class FooterSection extends StatelessWidget {
     return Row(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Icon(
-          icon,
-          color: Colors.grey[400],
-          size: 20,
-        ),
+        Icon(icon, color: Colors.grey[400], size: 20),
         const SizedBox(width: 12),
         Expanded(
           child: Text(
@@ -260,9 +348,7 @@ class FooterSection extends StatelessWidget {
 
   Widget _buildFooterLink(String text) {
     return InkWell(
-      onTap: () {
-        // Handle footer link tap
-      },
+      onTap: () {},
       child: Text(
         text,
         style: TextStyle(

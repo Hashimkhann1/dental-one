@@ -1,4 +1,6 @@
+import 'package:dental_one/l10n/app_localizations.dart';
 import 'package:dental_one/res/app_colors/app_colors.dart';
+import 'package:dental_one/res/provider/language_provider.dart';
 import 'package:dental_one/view/about_section/about_section.dart';
 import 'package:dental_one/view/book_now_section/book_now_section.dart';
 import 'package:dental_one/view/footer_section/footer_section.dart';
@@ -8,15 +10,16 @@ import 'package:dental_one/view/my_app_bar/my_app_bar.dart';
 import 'package:dental_one/view/our_experte_section/our_experte_section.dart';
 import 'package:dental_one/view/services_section/services_section.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-class AllSections extends StatefulWidget {
+class AllSections extends ConsumerStatefulWidget {
   const AllSections({super.key});
 
   @override
-  State<AllSections> createState() => _AllSectionsState();
+  ConsumerState<AllSections> createState() => _AllSectionsState();
 }
 
-class _AllSectionsState extends State<AllSections> {
+class _AllSectionsState extends ConsumerState<AllSections> {
   final ScrollController _scrollController = ScrollController();
   bool _showFloatingButton = false;
   String _currentSection = 'Home';
@@ -198,7 +201,6 @@ class _AllSectionsState extends State<AllSections> {
 
   @override
   Widget build(BuildContext context) {
-
     print(MediaQuery.of(context).size.width);
 
     return Scaffold(
@@ -211,7 +213,7 @@ class _AllSectionsState extends State<AllSections> {
         onExpertsPressed: () => scrollToSection(_expertsKey),
         onBookNowPressed: () => scrollToSection(_bookNowKey),
       ),
-      endDrawer: MediaQuery.of(context).size.width <= 768
+      endDrawer: MediaQuery.of(context).size.width <= 1050
           ? MobileDrawer(
         currentSection: _currentSection,
         onHomePressed: () {
@@ -269,7 +271,10 @@ class _AllSectionsState extends State<AllSections> {
           children: [
             Container(
               key: _homeKey,
-              child: const HomeSection(),
+              child: HomeSection(
+                bookAppointmentOnPressed: () => scrollToSection(_bookNowKey),
+                servicesOnPressed: () => scrollToSection(_servicesKey),
+              ),
             ),
             Container(
               key: _aboutKey,
@@ -297,7 +302,7 @@ class _AllSectionsState extends State<AllSections> {
 }
 
 // Mobile Drawer Widget
-class MobileDrawer extends StatelessWidget {
+class MobileDrawer extends ConsumerWidget {
   final String currentSection;
   final VoidCallback onHomePressed;
   final VoidCallback onAboutPressed;
@@ -316,7 +321,10 @@ class MobileDrawer extends StatelessWidget {
   });
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
+    final currentLocale = ref.watch(languageProvider);
+    final selectedLanguage = currentLocale.languageCode == 'en' ? 'English' : 'Arabic';
+
     return Drawer(
       backgroundColor: Colors.white,
       child: SafeArea(
@@ -352,38 +360,74 @@ class MobileDrawer extends StatelessWidget {
                 children: [
                   _buildDrawerItem(
                     context,
-                    'Home',
+                    AppLocalizations.of(context)!.home.toString(),
                     Icons.home_outlined,
                     currentSection == 'Home',
                     onHomePressed,
                   ),
                   _buildDrawerItem(
                     context,
-                    'About',
+                    AppLocalizations.of(context)!.aboutUs.toString(),
                     Icons.info_outline,
                     currentSection == 'About',
                     onAboutPressed,
                   ),
                   _buildDrawerItem(
                     context,
-                    'Services',
+                    AppLocalizations.of(context)!.services.toString(),
                     Icons.medical_services_outlined,
                     currentSection == 'Services',
                     onServicesPressed,
                   ),
                   _buildDrawerItem(
                     context,
-                    'Our Experts',
+                    AppLocalizations.of(context)!.ourExperts.toString(),
                     Icons.people_outline,
                     currentSection == 'Our Experts',
                     onExpertsPressed,
                   ),
                   _buildDrawerItem(
                     context,
-                    'Book Now',
+                    AppLocalizations.of(context)!.bookNow.toString(),
                     Icons.calendar_today_outlined,
                     currentSection == 'Book Now',
                     onBookNowPressed,
+                  ),
+                  const Divider(height: 40, thickness: 1),
+                  // Language Selection in Drawer
+                  Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 12),
+                    child: Container(
+                      margin: const EdgeInsets.symmetric(vertical: 4),
+                      decoration: BoxDecoration(
+                        border: Border.all(color: const Color(0xFFE2E8F0)),
+                        borderRadius: BorderRadius.circular(12),
+                      ),
+                      child: ListTile(
+                        leading: const Icon(
+                          Icons.language,
+                          color: AppColors.primaryColor,
+                          size: 24,
+                        ),
+                        title: Text(
+                          selectedLanguage,
+                          style: const TextStyle(
+                            fontSize: 16,
+                            fontWeight: FontWeight.w500,
+                          ),
+                        ),
+                        trailing: const Icon(
+                          Icons.keyboard_arrow_down_rounded,
+                          color: AppColors.primaryColor,
+                        ),
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(12),
+                        ),
+                        onTap: () {
+                          _showLanguageDialog(context, ref, selectedLanguage);
+                        },
+                      ),
+                    ),
                   ),
                 ],
               ),
@@ -401,6 +445,44 @@ class MobileDrawer extends StatelessWidget {
           ],
         ),
       ),
+    );
+  }
+
+  void _showLanguageDialog(BuildContext context, WidgetRef ref, String currentLanguage) {
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: const Text('Select Language'),
+          content: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              ListTile(
+                leading: const Icon(Icons.language, color: AppColors.primaryColor),
+                title: const Text('English'),
+                trailing: currentLanguage == 'English'
+                    ? const Icon(Icons.check, color: AppColors.primaryColor)
+                    : null,
+                onTap: () {
+                  ref.read(languageProvider.notifier).changeLanguage('en');
+                  Navigator.of(context).pop();
+                },
+              ),
+              ListTile(
+                leading: const Icon(Icons.language, color: AppColors.primaryColor),
+                title: const Text('Arabic'),
+                trailing: currentLanguage == 'Arabic'
+                    ? const Icon(Icons.check, color: AppColors.primaryColor)
+                    : null,
+                onTap: () {
+                  ref.read(languageProvider.notifier).changeLanguage('ar');
+                  Navigator.of(context).pop();
+                },
+              ),
+            ],
+          ),
+        );
+      },
     );
   }
 

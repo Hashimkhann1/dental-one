@@ -1,13 +1,16 @@
 import 'package:dental_one/l10n/app_localizations.dart';
 import 'package:dental_one/res/app_colors/app_colors.dart';
 import 'package:dental_one/res/responsive/responsive.dart';
+import 'package:dental_one/view/all_sections/all_sections.dart';
 import 'package:dental_one/view_model/home_view_model/home_view_model.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:google_fonts/google_fonts.dart';
 
 class HomeSection extends ConsumerStatefulWidget {
-  const HomeSection({super.key});
+  const HomeSection({super.key,this.bookAppointmentOnPressed,this.servicesOnPressed});
+  final void Function()? bookAppointmentOnPressed;
+  final void Function()? servicesOnPressed;
 
   @override
   ConsumerState<HomeSection> createState() => _HomeSectionState();
@@ -305,7 +308,7 @@ class _HomeSectionState extends ConsumerState<HomeSection>
         ],
       ),
       child: ElevatedButton.icon(
-        onPressed: () {},
+        onPressed: widget.bookAppointmentOnPressed,
         icon: Icon(
           Icons.calendar_today,
           size: Responsive.valueWhen(context,
@@ -363,7 +366,7 @@ class _HomeSectionState extends ConsumerState<HomeSection>
 
   Widget _buildSecondaryButton(BuildContext context) {
     return OutlinedButton(
-      onPressed: () {},
+      onPressed: widget.servicesOnPressed,
       style: OutlinedButton.styleFrom(
         padding: EdgeInsets.symmetric(
           horizontal: Responsive.valueWhen(context,

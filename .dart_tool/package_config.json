@@ -182,6 +182,12 @@
       "languageVersion": "3.8"
     },
     {
+      "name": "font_awesome_flutter",
+      "rootUri": "file:///Users/hashimkhan/.pub-cache/hosted/pub.dev/font_awesome_flutter-10.12.0",
+      "packageUri": "lib/",
+      "languageVersion": "3.9"
+    },
+    {
       "name": "frontend_server_client",
       "rootUri": "file:///Users/hashimkhan/.pub-cache/hosted/pub.dev/frontend_server_client-4.0.0",
       "packageUri": "lib/",

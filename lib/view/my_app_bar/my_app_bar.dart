@@ -67,7 +67,7 @@ class _MyAppBarState extends ConsumerState<MyAppBar> {
               const Spacer(),
 
               // Desktop Navigation
-              if (MediaQuery.of(context).size.width > 768) ...[
+              if (MediaQuery.of(context).size.width > 1050) ...[
                 _buildNavItem(AppLocalizations.of(context)!.home.toString(), widget.currentSection == 'Home', widget.onHomePressed),
                 const SizedBox(width: 40),
                 _buildNavItem(AppLocalizations.of(context)!.aboutUs.toString(), widget.currentSection == 'About', widget.onAboutPressed),

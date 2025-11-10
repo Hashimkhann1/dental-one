@@ -13,6 +13,7 @@
         "flutter",
         "flutter_localizations",
         "flutter_riverpod",
+        "font_awesome_flutter",
         "google_fonts",
         "google_maps_flutter",
         "riverpod",
@@ -47,6 +48,13 @@
         "stream_channel",
         "test_api",
         "vector_math"
+      ]
+    },
+    {
+      "name": "font_awesome_flutter",
+      "version": "10.12.0",
+      "dependencies": [
+        "flutter"
       ]
     },
     {
